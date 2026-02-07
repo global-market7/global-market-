@@ -3,119 +3,457 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سوق العالم - منصة تجارة عالمية</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <title>متجري الذكي 🛒</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <style>
-        * { font-family: 'Cairo', sans-serif; }
-        .gradient-text {
-            background: linear-gradient(135deg, #FF6B00 0%, #FF8E53 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .product-card { transition: all 0.3s ease; }
-        .product-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(255, 107, 0, 0.2); }
-        .float-animation { animation: float 6s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .btn-google {
+            width: 100%;
+            padding: 15px;
+            background: #db4437;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-google:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(219, 68, 55, 0.4);
+        }
+        
+        .btn-google:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .user-info {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .btn-logout {
+            background: #666;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .upload-area {
+            margin-top: 20px;
+            border: 2px dashed #667eea;
+            border-radius: 15px;
+            padding: 25px;
+            background: #f8f9ff;
+        }
+        
+        .upload-area h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn-publish {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn-publish:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-publish:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .products-list {
+            margin-top: 30px;
+        }
+        
+        .products-list h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .product-item {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .product-price {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 18px;
+        }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- شريط علوي -->
-    <div class="bg-gradient-to-r from-orange-600 to-orange-500 text-white py-2 text-center text-sm">
-        🚚 شحن مجاني للطلبات فوق 1000$ | ⭐ أكثر من 50,000 مورد موثوق
+<body>
+    <div class="container">
+        <h1 id="welcome">🛒 متجري الذكي</h1>
+        <p class="subtitle">منصة لبيع وشراء المنتجات</p>
+        
+        <div id="errorMsg" class="error-message"></div>
+        <div id="successMsg" class="success-message"></div>
+        
+        <div id="loginSection">
+            <button id="loginBtn" class="btn-google" onclick="login()">
+                <span>🔑</span>
+                <span>تسجيل الدخول بواسطة Google</span>
+            </button>
+        </div>
+        
+        <div id="userSection" style="display:none;">
+            <div class="user-info">
+                <img id="userAvatar" class="user-avatar" src="" alt="صورة المستخدم">
+                <div style="flex:1;">
+                    <div id="userName" style="font-weight:bold;"></div>
+                    <div id="userEmail" style="font-size:12px; color:#666;"></div>
+                </div>
+                <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
+            </div>
+            
+            <div class="upload-area">
+                <h3>📦 إضافة منتج جديد</h3>
+                <input type="text" id="pName" placeholder="اسم المنتج">
+                <input type="number" id="pPrice" placeholder="السعر (ريال)">
+                <button id="publishBtn" class="btn-publish" onclick="saveProduct()">
+                    نشر المنتج
+                </button>
+            </div>
+            
+            <div class="products-list">
+                <h3>📋 منتجاتي</h3>
+                <div id="productsList"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- رأس الصفحة -->
-    <header class="bg-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white text-2xl font-bold">س</div>
-                    <div>
-                        <h1 class="text-2xl font-bold gradient-text">سوق العالم</h1>
-                        <p class="text-xs text-gray-500">GlobalMarket.com</p>
-                    </div>
-                </div>
-                <div class="flex-1 max-w-xl hidden md:block">
-                    <div class="relative">
-                        <input type="text" placeholder="ابحث عن منتجات..." class="w-full px-6 py-3 pr-12 bg-gray-100 rounded-full border-2 border-transparent focus:border-orange-500 outline-none">
-                        <button class="absolute left-2 top-1/2 -translate-y-1/2 bg-orange-500 text-white px-6 py-2 rounded-full">بحث</button>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2 rounded-full font-semibold">تسجيل الدخول</button>
-                </div>
-            </div>
-        </div>
-    </header>
+    <script>
+        // ✅ إعدادات Firebase - تأكد من أن هذا هو المشروع الصحيح
+        const firebaseConfig = {
+            apiKey: "AIzaSyB650D7BDg0f4q7cf9kndvKW5Qz8H1nFj0",
+            authDomain: "mymarket-ec08e.firebaseapp.com",
+            projectId: "mymarket-ec08e",
+            storageBucket: "mymarket-ec08e.firebasestorage.app",
+            messagingSenderId: "529357774752",
+            appId: "1:529357774752:web:1dc0b061541702e22f8ec5"
+        };
 
-    <!-- القسم الرئيسي -->
-    <section class="bg-white py-12">
-        <div class="container mx-auto px-4">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div class="space-y-6">
-                    <h2 class="text-5xl font-bold leading-tight">
-                        اكتشف <span class="gradient-text">ملايين المنتجات</span><br>
-                        من موردين موثوقين
-                    </h2>
-                    <p class="text-xl text-gray-600">منصتك الشاملة للتجارة الدولية بأسعار الجملة المباشرة</p>
-                    <button class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-full font-bold text-lg">ابدأ التسوق الآن</button>
-                </div>
-                <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop" class="rounded-3xl shadow-2xl float-animation w-full object-cover h-[400px]">
-                </div>
-            </div>
-        </div>
-    </section>
+        // تهيئة Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-    <!-- منتجات مميزة -->
-    <section class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <h3 class="text-3xl font-bold text-center mb-12">منتجات مميزة</h3>
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="product-card bg-white rounded-2xl overflow-hidden shadow-lg">
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop" class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h4 class="font-bold text-lg mb-2">سماعات لاسلكية فاخرة</h4>
-                        <div class="text-2xl font-bold text-orange-600">$45.00</div>
-                        <button class="w-full mt-4 bg-orange-500 text-white py-3 rounded-xl font-semibold">تواصل مع المورد</button>
-                    </div>
-                </div>
-                <div class="product-card bg-white rounded-2xl overflow-hidden shadow-lg">
-                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop" class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h4 class="font-bold text-lg mb-2">ساعة ذكية متطورة</h4>
-                        <div class="text-2xl font-bold text-orange-600">$89.00</div>
-                        <button class="w-full mt-4 bg-orange-500 text-white py-3 rounded-xl font-semibold">تواصل مع المورد</button>
-                    </div>
-                </div>
-                <div class="product-card bg-white rounded-2xl overflow-hidden shadow-lg">
-                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop" class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h4 class="font-bold text-lg mb-2">أحذية رياضية عالية الجودة</h4>
-                        <div class="text-2xl font-bold text-orange-600">$32.00</div>
-                        <button class="w-full mt-4 bg-orange-500 text-white py-3 rounded-xl font-semibold">تواصل مع المورد</button>
-                    </div>
-                </div>
-                <div class="product-card bg-white rounded-2xl overflow-hidden shadow-lg">
-                    <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400&h=300&fit=crop" class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h4 class="font-bold text-lg mb-2">حقيبة يد جلدية فاخرة</h4>
-                        <div class="text-2xl font-bold text-orange-600">$78.00</div>
-                        <button class="w-full mt-4 bg-orange-500 text-white py-3 rounded-xl font-semibold">تواصل مع المورد</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        // ✅ التحقق من حالة المستخدم عند تحميل الصفحة
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                showUserSection(user);
+            } else {
+                showLoginSection();
+            }
+        });
 
-    <!-- تذييل -->
-    <footer class="bg-gray-900 text-white py-12 text-center">
-        <div class="container mx-auto px-4">
-            <h4 class="text-2xl font-bold mb-4">سوق العالم</h4>
-            <p>© 2024 جميع الحقوق محفوظة</p>
-        </div>
-    </footer>
+        // ✅ معالجة نتيجة Redirect
+        auth.getRedirectResult()
+            .then((result) => {
+                if (result.user) {
+                    showMessage('success', 'تم تسجيل الدخول بنجاح!');
+                    showUserSection(result.user);
+                }
+            })
+            .catch((error) => {
+                console.error('Redirect Error:', error);
+                handleAuthError(error);
+            });
+
+        // دالة تسجيل الدخول
+        function login() {
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> جاري التحميل...';
+            
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('email');
+            provider.addScope('profile');
+            
+            // استخدام Redirect (أفضل للهواتف)
+            auth.signInWithRedirect(provider)
+                .catch((error) => {
+                    handleAuthError(error);
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>🔑</span><span>تسجيل الدخول بواسطة Google</span>';
+                });
+        }
+
+        // دالة تسجيل الخروج
+        function logout() {
+            auth.signOut()
+                .then(() => {
+                    showMessage('success', 'تم تسجيل الخروج بنجاح');
+                    showLoginSection();
+                })
+                .catch((error) => {
+                    showMessage('error', 'حدث خطأ أثناء تسجيل الخروج');
+                });
+        }
+
+        // عرض قسم المستخدم
+        function showUserSection(user) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('userSection').style.display = 'block';
+            
+            document.getElementById('userName').textContent = user.displayName || 'مستخدم';
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('userAvatar').src = user.photoURL || 'https://via.placeholder.com/50';
+            
+            loadUserProducts(user.uid);
+        }
+
+        // عرض قسم تسجيل الدخول
+        function showLoginSection() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('userSection').style.display = 'none';
+            
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = false;
+            btn.innerHTML = '<span>🔑</span><span>تسجيل الدخول بواسطة Google</span>';
+        }
+
+        // حفظ المنتج
+        function saveProduct() {
+            const name = document.getElementById('pName').value.trim();
+            const price = document.getElementById('pPrice').value.trim();
+            const btn = document.getElementById('publishBtn');
+            
+            if (!name || !price) {
+                showMessage('error', 'الرجاء ملء جميع الحقول');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> جاري النشر...';
+            
+            const user = auth.currentUser;
+            if (!user) {
+                showMessage('error', 'يجب تسجيل الدخول أولاً');
+                return;
+            }
+            
+            db.collection("products").add({
+                name: name,
+                price: parseFloat(price),
+                userId: user.uid,
+                userName: user.displayName,
+                userEmail: user.email,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                showMessage('success', '✅ تم نشر المنتج بنجاح!');
+                document.getElementById('pName').value = '';
+                document.getElementById('pPrice').value = '';
+                loadUserProducts(user.uid);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                showMessage('error', '❌ حدث خطأ: ' + error.message);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = 'نشر المنتج';
+            });
+        }
+
+        // تحميل منتجات المستخدم
+        function loadUserProducts(userId) {
+            db.collection("products")
+                .where("userId", "==", userId)
+                .orderBy("createdAt", "desc")
+                .get()
+                .then((snapshot) => {
+                    const list = document.getElementById('productsList');
+                    if (snapshot.empty) {
+                        list.innerHTML = '<p style="color:#999; text-align:center;">لا توجد منتجات بعد</p>';
+                        return;
+                    }
+                    
+                    list.innerHTML = '';
+                    snapshot.forEach((doc) => {
+                        const product = doc.data();
+                        const item = document.createElement('div');
+                        item.className = 'product-item';
+                        item.innerHTML = `
+                            <div>
+                                <div style="font-weight:bold;">${product.name}</div>
+                                <div style="font-size:12px; color:#999;">${product.createdAt ? new Date(product.createdAt.toDate()).toLocaleDateString('ar-SA') : ''}</div>
+                            </div>
+                            <div class="product-price">${product.price} ريال</div>
+                        `;
+                        list.appendChild(item);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error loading products:', error);
+                });
+        }
+
+        // معالجة أخطاء المصادقة
+        function handleAuthError(error) {
+            let message = 'حدث خطأ غير متوقع';
+            
+            switch(error.code) {
+                case 'auth/unauthorized-domain':
+                    message = '⚠️ هذا النطاق غير مصرح به. أضفه في إعدادات Firebase Authentication';
+                    break;
+                case 'auth/popup-closed-by-user':
+                    message = 'تم إغلاق نافذة تسجيل الدخول';
+                    break;
+                case 'auth/cancelled-popup-request':
+                    message = 'تم إلغاء طلب تسجيل الدخول';
+                    break;
+                case 'auth/network-request-failed':
+                    message = 'خطأ في الاتصال بالشبكة';
+                    break;
+                default:
+                    message = error.message;
+            }
+            
+            showMessage('error', message);
+        }
+
+        // عرض الرسائل
+        function showMessage(type, text) {
+            const errorDiv = document.getElementById('errorMsg');
+            const successDiv = document.getElementById('successMsg');
+            
+            if (type === 'error') {
+                errorDiv.textContent = text;
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                setTimeout(() => errorDiv.style.display = 'none', 5000);
+            } else {
+                successDiv.textContent = text;
+                successDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+                setTimeout(() => successDiv.style.display = 'none', 3000);
+            }
+        }
+    </script>
 </body>
 </html>
