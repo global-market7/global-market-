@@ -8,19 +8,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
         .container {
             max-width: 500px;
             margin: 0 auto;
@@ -29,18 +23,8 @@
             padding: 30px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-        }
-        
+        h1 { color: #333; margin-bottom: 10px; font-size: 24px; }
+        .subtitle { color: #666; margin-bottom: 30px; }
         .btn-google {
             width: 100%;
             padding: 15px;
@@ -50,24 +34,10 @@
             border-radius: 10px;
             font-size: 16px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s;
         }
-        
-        .btn-google:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(219, 68, 55, 0.4);
-        }
-        
-        .btn-google:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
+        .btn-google:hover { transform: translateY(-2px); }
+        .btn-google:disabled { opacity: 0.6; cursor: not-allowed; }
         .user-info {
             background: #f0f0f0;
             padding: 15px;
@@ -77,14 +47,12 @@
             align-items: center;
             gap: 15px;
         }
-        
         .user-avatar {
             width: 50px;
             height: 50px;
             border-radius: 50%;
             object-fit: cover;
         }
-        
         .btn-logout {
             background: #666;
             color: white;
@@ -94,7 +62,6 @@
             cursor: pointer;
             font-size: 12px;
         }
-        
         .upload-area {
             margin-top: 20px;
             border: 2px dashed #667eea;
@@ -102,12 +69,6 @@
             padding: 25px;
             background: #f8f9ff;
         }
-        
-        .upload-area h3 {
-            color: #667eea;
-            margin-bottom: 20px;
-        }
-        
         input {
             width: 100%;
             padding: 12px;
@@ -115,14 +76,7 @@
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 14px;
-            transition: border-color 0.3s;
         }
-        
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
         .btn-publish {
             width: 100%;
             padding: 12px;
@@ -132,37 +86,7 @@
             border-radius: 8px;
             font-size: 16px;
             cursor: pointer;
-            transition: transform 0.2s;
         }
-        
-        .btn-publish:hover {
-            transform: translateY(-2px);
-        }
-        
-        .btn-publish:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .error-message {
-            background: #ffebee;
-            color: #c62828;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        
-        .success-message {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        
         .loading {
             display: inline-block;
             width: 20px;
@@ -172,36 +96,7 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .products-list {
-            margin-top: 30px;
-        }
-        
-        .products-list h3 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        .product-item {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .product-price {
-            color: #667eea;
-            font-weight: bold;
-            font-size: 18px;
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -209,13 +104,9 @@
         <h1 id="welcome">🛒 متجري الذكي</h1>
         <p class="subtitle">منصة لبيع وشراء المنتجات</p>
         
-        <div id="errorMsg" class="error-message"></div>
-        <div id="successMsg" class="success-message"></div>
-        
         <div id="loginSection">
             <button id="loginBtn" class="btn-google" onclick="login()">
-                <span>🔑</span>
-                <span>تسجيل الدخول بواسطة Google</span>
+                🔑 تسجيل الدخول بواسطة Google
             </button>
         </div>
         
@@ -237,16 +128,11 @@
                     نشر المنتج
                 </button>
             </div>
-            
-            <div class="products-list">
-                <h3>📋 منتجاتي</h3>
-                <div id="productsList"></div>
-            </div>
         </div>
     </div>
 
     <script>
-        // ✅ إعدادات Firebase - تأكد من أن هذا هو المشروع الصحيح
+        // إعدادات Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyB650D7BDg0f4q7cf9kndvKW5Qz8H1nFj0",
             authDomain: "mymarket-ec08e.firebaseapp.com",
@@ -256,12 +142,11 @@
             appId: "1:529357774752:web:1dc0b061541702e22f8ec5"
         };
 
-        // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ✅ التحقق من حالة المستخدم عند تحميل الصفحة
+        // التحقق من حالة المستخدم
         auth.onAuthStateChanged(user => {
             if (user) {
                 showUserSection(user);
@@ -270,89 +155,67 @@
             }
         });
 
-        // ✅ معالجة نتيجة Redirect
-        auth.getRedirectResult()
-            .then((result) => {
-                if (result.user) {
-                    showMessage('success', 'تم تسجيل الدخول بنجاح!');
-                    showUserSection(result.user);
-                }
-            })
-            .catch((error) => {
-                console.error('Redirect Error:', error);
-                handleAuthError(error);
-            });
-
-        // دالة تسجيل الدخول
+        // تسجيل الدخول
         function login() {
             const btn = document.getElementById('loginBtn');
             btn.disabled = true;
             btn.innerHTML = '<span class="loading"></span> جاري التحميل...';
             
             const provider = new firebase.auth.GoogleAuthProvider();
-            provider.addScope('email');
-            provider.addScope('profile');
             
-            // استخدام Redirect (أفضل للهواتف)
-            auth.signInWithRedirect(provider)
+            // استخدام Popup بدلاً من Redirect (أسهل للهواتف)
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    showUserSection(result.user);
+                })
                 .catch((error) => {
-                    handleAuthError(error);
+                    console.error(error);
+                    alert('خطأ: ' + error.message);
                     btn.disabled = false;
-                    btn.innerHTML = '<span>🔑</span><span>تسجيل الدخول بواسطة Google</span>';
+                    btn.innerHTML = '🔑 تسجيل الدخول بواسطة Google';
                 });
         }
 
-        // دالة تسجيل الخروج
+        // تسجيل الخروج
         function logout() {
-            auth.signOut()
-                .then(() => {
-                    showMessage('success', 'تم تسجيل الخروج بنجاح');
-                    showLoginSection();
-                })
-                .catch((error) => {
-                    showMessage('error', 'حدث خطأ أثناء تسجيل الخروج');
-                });
+            auth.signOut().then(() => {
+                showLoginSection();
+            });
         }
 
         // عرض قسم المستخدم
         function showUserSection(user) {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('userSection').style.display = 'block';
-            
+            document.getElementById('welcome').innerText = '🛒 أهلاً ' + user.displayName;
             document.getElementById('userName').textContent = user.displayName || 'مستخدم';
             document.getElementById('userEmail').textContent = user.email;
             document.getElementById('userAvatar').src = user.photoURL || 'https://via.placeholder.com/50';
-            
-            loadUserProducts(user.uid);
         }
 
         // عرض قسم تسجيل الدخول
         function showLoginSection() {
             document.getElementById('loginSection').style.display = 'block';
             document.getElementById('userSection').style.display = 'none';
-            
+            document.getElementById('welcome').innerText = '🛒 متجري الذكي';
             const btn = document.getElementById('loginBtn');
             btn.disabled = false;
-            btn.innerHTML = '<span>🔑</span><span>تسجيل الدخول بواسطة Google</span>';
+            btn.innerHTML = '🔑 تسجيل الدخول بواسطة Google';
         }
 
         // حفظ المنتج
         function saveProduct() {
             const name = document.getElementById('pName').value.trim();
             const price = document.getElementById('pPrice').value.trim();
-            const btn = document.getElementById('publishBtn');
             
             if (!name || !price) {
-                showMessage('error', 'الرجاء ملء جميع الحقول');
+                alert('الرجاء ملء جميع الحقول');
                 return;
             }
             
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span> جاري النشر...';
-            
             const user = auth.currentUser;
             if (!user) {
-                showMessage('error', 'يجب تسجيل الدخول أولاً');
+                alert('يجب تسجيل الدخول أولاً');
                 return;
             }
             
@@ -361,98 +224,16 @@
                 price: parseFloat(price),
                 userId: user.uid,
                 userName: user.displayName,
-                userEmail: user.email,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             })
             .then(() => {
-                showMessage('success', '✅ تم نشر المنتج بنجاح!');
+                alert('✅ تم نشر المنتج بنجاح!');
                 document.getElementById('pName').value = '';
                 document.getElementById('pPrice').value = '';
-                loadUserProducts(user.uid);
             })
             .catch((error) => {
-                console.error('Error:', error);
-                showMessage('error', '❌ حدث خطأ: ' + error.message);
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.innerHTML = 'نشر المنتج';
+                alert('❌ خطأ: ' + error.message);
             });
-        }
-
-        // تحميل منتجات المستخدم
-        function loadUserProducts(userId) {
-            db.collection("products")
-                .where("userId", "==", userId)
-                .orderBy("createdAt", "desc")
-                .get()
-                .then((snapshot) => {
-                    const list = document.getElementById('productsList');
-                    if (snapshot.empty) {
-                        list.innerHTML = '<p style="color:#999; text-align:center;">لا توجد منتجات بعد</p>';
-                        return;
-                    }
-                    
-                    list.innerHTML = '';
-                    snapshot.forEach((doc) => {
-                        const product = doc.data();
-                        const item = document.createElement('div');
-                        item.className = 'product-item';
-                        item.innerHTML = `
-                            <div>
-                                <div style="font-weight:bold;">${product.name}</div>
-                                <div style="font-size:12px; color:#999;">${product.createdAt ? new Date(product.createdAt.toDate()).toLocaleDateString('ar-SA') : ''}</div>
-                            </div>
-                            <div class="product-price">${product.price} ريال</div>
-                        `;
-                        list.appendChild(item);
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error loading products:', error);
-                });
-        }
-
-        // معالجة أخطاء المصادقة
-        function handleAuthError(error) {
-            let message = 'حدث خطأ غير متوقع';
-            
-            switch(error.code) {
-                case 'auth/unauthorized-domain':
-                    message = '⚠️ هذا النطاق غير مصرح به. أضفه في إعدادات Firebase Authentication';
-                    break;
-                case 'auth/popup-closed-by-user':
-                    message = 'تم إغلاق نافذة تسجيل الدخول';
-                    break;
-                case 'auth/cancelled-popup-request':
-                    message = 'تم إلغاء طلب تسجيل الدخول';
-                    break;
-                case 'auth/network-request-failed':
-                    message = 'خطأ في الاتصال بالشبكة';
-                    break;
-                default:
-                    message = error.message;
-            }
-            
-            showMessage('error', message);
-        }
-
-        // عرض الرسائل
-        function showMessage(type, text) {
-            const errorDiv = document.getElementById('errorMsg');
-            const successDiv = document.getElementById('successMsg');
-            
-            if (type === 'error') {
-                errorDiv.textContent = text;
-                errorDiv.style.display = 'block';
-                successDiv.style.display = 'none';
-                setTimeout(() => errorDiv.style.display = 'none', 5000);
-            } else {
-                successDiv.textContent = text;
-                successDiv.style.display = 'block';
-                errorDiv.style.display = 'none';
-                setTimeout(() => successDiv.style.display = 'none', 3000);
-            }
         }
     </script>
 </body>
