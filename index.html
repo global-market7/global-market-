@@ -5,620 +5,237 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Market Pro - B2B Marketplace</title>
     
-    <!-- Firebase SDK -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
         
         :root { 
             --primary: #2563eb; 
             --primary-dark: #1d4ed8;
-            --primary-light: #3b82f6;
             --secondary: #f59e0b;
             --dark: #1e293b;
             --text: #0f172a;
-            --text-secondary: #64748b;
+            --text-light: #64748b;
             --bg: #f1f5f9;
             --white: #ffffff;
             --border: #e2e8f0;
             --success: #10b981;
-            --warning: #f59e0b;
             --danger: #ef4444;
-            --shadow: 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
         }
         
-        body { 
-            font-family: 'Tajawal', 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            padding-bottom: 80px;
-        }
+        body { background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 80px; }
         
-        /* Loading Screen */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--primary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s;
-        }
-        .loading-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .loading-logo {
-            font-size: 48px;
+        /* Loading */
+        .loading {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--primary); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999;
             color: white;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
         }
-        .loading-text {
-            color: white;
-            font-size: 18px;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        /* Top Bar */
-        .top-bar {
-            background: var(--primary-dark);
-            color: white;
-            padding: 8px 16px;
-            font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .top-bar a {
-            color: white;
-            text-decoration: none;
-            margin-left: 16px;
-            opacity: 0.9;
-        }
+        .loading i { font-size: 48px; margin-bottom: 16px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .loading.hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
         
         /* Header */
+        .top-bar {
+            background: var(--primary-dark); color: white; padding: 8px 16px;
+            font-size: 12px; display: flex; justify-content: space-between;
+        }
         .main-header {
-            background: var(--primary);
-            padding: 16px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow-lg);
+            background: var(--primary); padding: 16px; position: sticky; top: 0; z-index: 1000;
         }
         .header-top {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 12px;
+            display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
         }
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: white;
-            text-decoration: none;
-            font-size: 24px;
-            font-weight: 800;
+            color: white; text-decoration: none; font-size: 20px; font-weight: 800;
+            display: flex; align-items: center; gap: 8px;
         }
-        .logo i {
-            font-size: 32px;
-            color: var(--secondary);
-        }
+        .logo i { color: var(--secondary); font-size: 28px; }
         
         .search-box {
-            flex: 1;
-            display: flex;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex: 1; display: flex; background: white; border-radius: 8px; overflow: hidden;
         }
-        .search-box input {
-            flex: 1;
-            border: none;
-            padding: 12px 16px;
-            font-size: 14px;
-            outline: none;
-        }
-        .search-box button {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 0 24px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: 600;
-        }
+        .search-box input { flex: 1; border: none; padding: 12px; font-size: 14px; outline: none; }
+        .search-box button { background: var(--secondary); border: none; padding: 0 16px; color: white; cursor: pointer; }
         
-        .header-actions {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
-        .header-btn {
-            color: white;
-            text-decoration: none;
-            font-size: 13px;
-            text-align: center;
-            cursor: pointer;
-            position: relative;
-        }
-        .header-btn i {
-            display: block;
-            font-size: 22px;
-            margin-bottom: 2px;
-        }
-        .header-btn .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
-            color: white;
-            font-size: 10px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .header-actions { display: flex; gap: 16px; align-items: center; }
+        .header-btn { color: white; text-decoration: none; font-size: 12px; text-align: center; cursor: pointer; }
+        .header-btn i { display: block; font-size: 20px; margin-bottom: 2px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid white; cursor: pointer; }
         
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid white;
-            cursor: pointer;
-            object-fit: cover;
-        }
-        
-        /* Category Tabs */
         .category-tabs {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 4px 0;
+            display: flex; gap: 8px; overflow-x: auto; padding: 4px 0;
         }
         .category-tabs::-webkit-scrollbar { display: none; }
         .cat-tab {
-            padding: 8px 20px;
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            white-space: nowrap;
+            padding: 8px 16px; background: rgba(255,255,255,0.2); color: white;
+            border: none; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;
         }
-        .cat-tab:hover, .cat-tab.active {
-            background: white;
-            color: var(--primary);
-        }
+        .cat-tab.active, .cat-tab:hover { background: white; color: var(--primary); }
         
         /* Quick Actions */
         .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            padding: 20px 16px;
-            background: var(--white);
-            margin-bottom: 12px;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+            padding: 16px; background: white; margin-bottom: 12px;
         }
-        .quick-action {
-            text-align: center;
-            cursor: pointer;
-        }
+        .quick-action { text-align: center; cursor: pointer; }
         .quick-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin: 0 auto 10px;
-            box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+            width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary), #3b82f6);
+            color: white; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin: 0 auto 8px; box-shadow: 0 4px 15px rgba(37,99,235,0.3);
         }
+        .quick-action span { font-size: 12px; color: var(--text); font-weight: 600; }
+        
+        /* Section */
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px; background: white;
+        }
+        .section-title { font-size: 18px; font-weight: 700; }
+        .view-all { color: var(--primary); font-size: 14px; text-decoration: none; font-weight: 600; }
         
         /* Products */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 16px 12px;
-            background: var(--white);
-        }
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
-        .view-all {
-            color: var(--primary);
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        
         .products-scroll {
-            display: flex;
-            gap: 16px;
-            padding: 0 16px 20px;
-            overflow-x: auto;
-            background: var(--white);
+            display: flex; gap: 12px; padding: 0 16px 16px; overflow-x: auto;
+            background: white;
         }
         .products-scroll::-webkit-scrollbar { display: none; }
         
         .product-card {
-            min-width: 180px;
-            background: var(--white);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
+            min-width: 160px; background: white; border-radius: 12px;
+            overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);
             cursor: pointer;
-            transition: transform 0.3s;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
         }
         .product-image {
-            height: 180px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 64px;
-            color: white;
-        }
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: 160px; position: relative; display: flex; align-items: center;
+            justify-content: center; font-size: 48px; color: white;
         }
         .product-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: var(--danger);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
+            position: absolute; top: 8px; left: 8px; background: var(--danger);
+            color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;
         }
         .verified-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 28px;
-            height: 28px;
-            background: var(--success);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
+            position: absolute; top: 8px; right: 8px; width: 24px; height: 24px;
+            background: var(--success); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 12px;
         }
-        
-        .product-info {
-            padding: 16px;
-        }
-        .product-price {
-            color: var(--primary);
-            font-size: 20px;
-            font-weight: 800;
-        }
-        .product-price span {
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-        .product-title {
-            font-size: 14px;
-            color: var(--text);
-            height: 40px;
-            overflow: hidden;
-            margin: 8px 0;
-        }
-        .product-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-        }
-        .product-rating {
-            color: var(--secondary);
-        }
+        .product-info { padding: 12px; }
+        .product-price { color: var(--primary); font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+        .product-price span { font-size: 12px; color: var(--text-light); font-weight: 400; }
+        .product-title { font-size: 13px; height: 36px; overflow: hidden; margin-bottom: 8px; }
+        .product-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-light); }
+        .product-rating { color: var(--secondary); }
         
         .products-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            padding: 0 16px 20px;
-            background: var(--white);
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+            padding: 0 16px 16px; background: white;
         }
         
-        /* Add Product Button */
+        /* FAB */
         .fab {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 4px 15px rgba(37,99,235,0.4);
-            cursor: pointer;
-            z-index: 998;
-            border: none;
+            position: fixed; bottom: 90px; right: 20px; width: 56px; height: 56px;
+            background: var(--primary); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; box-shadow: 0 4px 15px rgba(37,99,235,0.4);
+            cursor: pointer; border: none; z-index: 998;
         }
         
         /* Modal */
         .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.6);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center;
             padding: 20px;
         }
         .modal-overlay.active { display: flex; }
-        
         .modal {
-            background: var(--white);
-            border-radius: 24px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
+            background: white; border-radius: 20px; width: 100%; max-width: 450px;
+            max-height: 90vh; overflow-y: auto;
         }
         .modal-header {
-            padding: 24px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: var(--primary); color: white; padding: 20px;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .modal-body {
-            padding: 24px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 15px;
-            outline: none;
-        }
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            border-color: var(--primary);
-        }
-        .image-upload {
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-        }
-        .image-upload i {
-            font-size: 48px;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-        }
-        .btn-primary {
-            width: 100%;
-            padding: 16px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+        .modal-header h3 { font-size: 20px; }
+        .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        .modal-body { padding: 20px; }
         
-        /* Chat */
-        .chat-container {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 350px;
-            height: 500px;
-            background: var(--white);
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            display: none;
-            flex-direction: column;
-            z-index: 999;
-            overflow: hidden;
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 12px; border: 2px solid var(--border);
+            border-radius: 10px; font-size: 15px; outline: none;
         }
-        .chat-container.active { display: flex; }
-        .chat-header {
-            background: var(--primary);
-            color: white;
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--primary); }
+        
+        .image-upload {
+            border: 2px dashed var(--border); border-radius: 12px; padding: 30px;
+            text-align: center; cursor: pointer;
         }
-        .chat-messages {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-            background: var(--bg);
+        .image-upload i { font-size: 40px; color: var(--text-light); margin-bottom: 8px; }
+        
+        .btn-primary {
+            width: 100%; padding: 14px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;
         }
-        .message {
-            margin-bottom: 12px;
-            padding: 12px 16px;
-            border-radius: 16px;
-            max-width: 80%;
-            font-size: 14px;
-        }
-        .message-received {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 16px 16px 16px 4px;
-        }
-        .message-sent {
-            background: var(--primary);
-            color: white;
-            border-radius: 16px 16px 4px 16px;
-            margin-left: auto;
-        }
-        .chat-input {
-            padding: 16px;
-            display: flex;
-            gap: 12px;
-            border-top: 1px solid var(--border);
-        }
-        .chat-input input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 1px solid var(--border);
-            border-radius: 25px;
-            outline: none;
-        }
-        .chat-input button {
-            width: 45px;
-            height: 45px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-        }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
         
         /* Bottom Nav */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--white);
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0 8px;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-            z-index: 1000;
+            position: fixed; bottom: 0; left: 0; right: 0; background: white;
+            display: flex; justify-content: space-around; padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000;
         }
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 16px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 12px;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 4px 12px; color: var(--text-light); text-decoration: none; font-size: 12px;
         }
-        .nav-item i {
-            font-size: 24px;
-        }
-        .nav-item.active {
-            color: var(--primary);
-        }
+        .nav-item i { font-size: 22px; }
+        .nav-item.active { color: var(--primary); }
         
         /* Toast */
         .toast {
-            position: fixed;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: var(--dark);
-            color: white;
-            padding: 16px 32px;
-            border-radius: 50px;
-            font-size: 14px;
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 3000;
+            position: fixed; top: 100px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: var(--dark); color: white; padding: 14px 28px; border-radius: 50px;
+            font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 3000;
         }
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         
         .hidden { display: none !important; }
     </style>
 </head>
-<body lang="ar" dir="rtl">
+<body>
 
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <i class="fas fa-globe loading-logo"></i>
-        <div class="loading-text">جاري التحميل...</div>
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <i class="fas fa-globe"></i>
+        <div>جاري التحميل...</div>
     </div>
 
     <!-- Top Bar -->
     <div class="top-bar">
-        <div>
-            <a href="https://wa.me/967738520546"><i class="fas fa-headset"></i> الدعم: +967 738 520 546</a>
-        </div>
-        <div>
-            <span id="userStatus">زائر</span>
-        </div>
+        <div><i class="fas fa-headset"></i> الدعم: +967 738 520 546</div>
+        <div id="userStatus">زائر</div>
     </div>
 
-    <!-- Main Header -->
+    <!-- Header -->
     <header class="main-header">
         <div class="header-top">
-            <a href="#" class="logo" onclick="showPage('home')">
+            <a href="#" class="logo" onclick="location.reload()">
                 <i class="fas fa-globe"></i>
                 <span>Global Market</span>
             </a>
             
             <div class="search-box">
-                <input type="text" placeholder="ابحث عن منتجات، موردين..." id="searchInput" onkeyup="searchProducts(this.value)">
+                <input type="text" placeholder="ابحث عن منتجات..." id="searchInput" onkeyup="searchProducts(this.value)">
                 <button onclick="search()"><i class="fas fa-search"></i></button>
             </div>
             
@@ -626,11 +243,6 @@
                 <div class="header-btn" onclick="showAuthModal()" id="signInBtn">
                     <i class="fas fa-user"></i>
                     <span>دخول</span>
-                </div>
-                <div class="header-btn hidden" id="messagesBtn" onclick="toggleChat()">
-                    <i class="fas fa-comment-dots"></i>
-                    <span>رسائل</span>
-                    <span class="badge" id="msgBadge">0</span>
                 </div>
                 <div class="header-btn hidden" id="userMenuBtn">
                     <img src="" alt="" class="user-avatar" id="userAvatar" onclick="logout()">
@@ -649,77 +261,99 @@
     </header>
 
     <!-- Main Content -->
-    <main id="mainContent">
-        <!-- Home Page -->
-        <div id="homePage" class="page">
-            <!-- Quick Actions -->
-            <div class="quick-actions">
-                <div class="quick-action" onclick="showAddProductModal()">
-                    <div class="quick-icon"><i class="fas fa-plus"></i></div>
-                    <span>أضف منتج</span>
-                </div>
-                <div class="quick-action" onclick="filterCategory('deals')">
-                    <div class="quick-icon"><i class="fas fa-fire"></i></div>
-                    <span>صفقات</span>
-                </div>
-                <div class="quick-action" onclick="showRFQModal()">
-                    <div class="quick-icon"><i class="fas fa-file-alt"></i></div>
-                    <span>طلب عرض</span>
-                </div>
-                <div class="quick-action" onclick="filterCategory('verified')">
-                    <div class="quick-icon"><i class="fas fa-check-circle"></i></div>
-                    <span>موثق</span>
-                </div>
+    <main>
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="quick-action" onclick="showAddProductModal()">
+                <div class="quick-icon"><i class="fas fa-plus"></i></div>
+                <span>أضف منتج</span>
             </div>
+            <div class="quick-action" onclick="filterCategory('deals')">
+                <div class="quick-icon"><i class="fas fa-fire"></i></div>
+                <span>صفقات</span>
+            </div>
+            <div class="quick-action" onclick="showToast('قريباً')">
+                <div class="quick-icon"><i class="fas fa-file-alt"></i></div>
+                <span>طلب عرض</span>
+            </div>
+            <div class="quick-action" onclick="filterCategory('verified')">
+                <div class="quick-icon"><i class="fas fa-check-circle"></i></div>
+                <span>موثق</span>
+            </div>
+        </div>
 
-            <!-- Hot Products -->
-            <div class="section-header">
-                <h2 class="section-title"><i class="fas fa-fire" style="color: var(--danger);"></i> منتجات ساخنة</h2>
-                <a href="#" class="view-all">عرض الكل</a>
+        <!-- Hot Products -->
+        <div class="section-header">
+            <h2 class="section-title">🔥 منتجات ساخنة</h2>
+            <a href="#" class="view-all">عرض الكل</a>
+        </div>
+        <div class="products-scroll" id="hotProducts">
+            <div style="padding: 40px; text-align: center; color: var(--text-light); width: 100%;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i>
+                <p>جاري التحميل...</p>
             </div>
-            <div class="products-scroll" id="hotProducts">
-                <div style="padding: 40px; text-align: center; color: var(--text-secondary);">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i>
-                    <p>جاري تحميل المنتجات...</p>
-                </div>
-            </div>
+        </div>
 
-            <!-- All Products -->
-            <div class="section-header">
-                <h2 class="section-title"><i class="fas fa-th-large" style="color: var(--primary);"></i> جميع المنتجات</h2>
-                <a href="#" class="view-all">عرض الكل</a>
-            </div>
-            <div class="products-grid" id="allProducts">
-                <div style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--text-secondary);">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i>
-                    <p>جاري تحميل المنتجات...</p>
-                </div>
+        <!-- All Products -->
+        <div class="section-header">
+            <h2 class="section-title">📦 جميع المنتجات</h2>
+            <a href="#" class="view-all">عرض الكل</a>
+        </div>
+        <div class="products-grid" id="allProducts">
+            <div style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--text-light);">
+                <i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i>
+                <p>جاري التحميل...</p>
             </div>
         </div>
     </main>
+
+    <!-- FAB -->
+    <button class="fab hidden" id="fabBtn" onclick="showAddProductModal()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal" onclick="closeModal(event, 'authModal')">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>تسجيل الدخول</h3>
+                <button class="close-btn" onclick="closeModal(null, 'authModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <button class="btn-primary" onclick="signInWithGoogle()" style="background: white; color: var(--text); border: 2px solid var(--border); margin-bottom: 16px;">
+                    <img src="https://www.google.com/favicon.ico" width="20" style="vertical-align: middle; margin-left: 8px;">
+                    المتابعة مع Google
+                </button>
+                
+                <div style="text-align: center; color: var(--text-light); margin: 16px 0;">أو</div>
+                
+                <p style="text-align: center; color: var(--text-light);">سجّل الدخول للوصول إلى جميع الميزات</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Add Product Modal -->
     <div class="modal-overlay" id="addProductModal" onclick="closeModal(event, 'addProductModal')">
         <div class="modal" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h3>إضافة منتج جديد</h3>
-                <button onclick="closeModal(null, 'addProductModal')" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+                <button class="close-btn" onclick="closeModal(null, 'addProductModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="productForm" onsubmit="submitProduct(event)">
                     <div class="form-group">
-                        <label>صور المنتج</label>
-                        <div class="image-upload" onclick="document.getElementById('productImages').click()">
+                        <label>صورة المنتج</label>
+                        <div class="image-upload" onclick="document.getElementById('productImage').click()">
                             <i class="fas fa-cloud-upload-alt"></i>
-                            <p>اضغط لرفع الصور</p>
-                            <input type="file" id="productImages" multiple accept="image/*" style="display: none;" onchange="previewImages(this)">
+                            <div>اضغط لرفع الصورة</div>
+                            <input type="file" id="productImage" accept="image/*" style="display: none;" onchange="previewImage(this)">
                         </div>
-                        <div id="imagePreview" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
+                        <div id="imagePreview" style="margin-top: 10px;"></div>
                     </div>
                     
                     <div class="form-group">
                         <label>اسم المنتج *</label>
-                        <input type="text" id="prodName" required placeholder="مثال: سماعات بلوتوث لاسلكية">
+                        <input type="text" id="prodName" required placeholder="مثال: سماعات بلوتوث">
                     </div>
                     
                     <div class="form-group">
@@ -728,7 +362,7 @@
                             <option value="">اختر الفئة</option>
                             <option value="electronics">إلكترونيات</option>
                             <option value="fashion">أزياء</option>
-                            <option value="home">منزل وحديقة</option>
+                            <option value="home">منزل</option>
                             <option value="beauty">جمال</option>
                             <option value="industrial">صناعة</option>
                             <option value="sports">رياضة</option>
@@ -741,74 +375,21 @@
                             <input type="number" id="prodPrice" required placeholder="25.00" step="0.01">
                         </div>
                         <div class="form-group">
-                            <label>الحد الأدنى (MOQ) *</label>
+                            <label>الحد الأدنى *</label>
                             <input type="number" id="prodMOQ" required placeholder="50">
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label>الوصف *</label>
-                        <textarea id="prodDesc" rows="3" required placeholder="وصف تفصيلي للمنتج..."></textarea>
+                        <textarea id="prodDesc" rows="3" required placeholder="وصف المنتج..."></textarea>
                     </div>
                     
-                    <button type="submit" class="btn-primary" id="submitBtn">
-                        <i class="fas fa-paper-plane"></i> نشر المنتج
-                    </button>
+                    <button type="submit" class="btn-primary" id="submitBtn">نشر المنتج</button>
                 </form>
             </div>
         </div>
     </div>
-
-    <!-- Auth Modal -->
-    <div class="modal-overlay" id="authModal" onclick="closeModal(event, 'authModal')">
-        <div class="modal" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <div class="logo" style="font-size: 20px;"><i class="fas fa-globe"></i> Global Market</div>
-                <button onclick="closeModal(null, 'authModal')" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
-            </div>
-            <div class="modal-body">
-                <button class="btn-primary" onclick="signInWithGoogle()" style="background: white; color: var(--text); border: 2px solid var(--border); margin-bottom: 16px;">
-                    <img src="https://www.google.com/favicon.ico" width="20" style="vertical-align: middle; margin-left: 8px;">
-                    المتابعة مع Google
-                </button>
-                
-                <div style="text-align: center; margin: 16px 0; color: var(--text-secondary);">أو</div>
-                
-                <div class="form-group">
-                    <label>رقم الهاتف</label>
-                    <div style="display: flex; gap: 8px;">
-                        <select style="width: 100px; padding: 14px; border: 2px solid var(--border); border-radius: 12px;">
-                            <option>🇾🇪 +967</option>
-                        </select>
-                        <input type="tel" placeholder="738520546" style="flex: 1;">
-                    </div>
-                </div>
-                
-                <button class="btn-primary" onclick="signInWithPhone()">إرسال رمز التحقق</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Chat Container -->
-    <div class="chat-container" id="chatContainer">
-        <div class="chat-header">
-            <div>
-                <div style="font-weight: 700;">الدردشة</div>
-                <div style="font-size: 12px; opacity: 0.9;">متصل الآن</div>
-            </div>
-            <button onclick="toggleChat()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">&times;</button>
-        </div>
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="اكتب رسالتك..." onkeypress="handleChatKey(event)">
-            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-
-    <!-- FAB -->
-    <button class="fab" onclick="showAddProductModal()" id="fabBtn" title="أضف منتج">
-        <i class="fas fa-plus"></i>
-    </button>
 
     <!-- Bottom Nav -->
     <nav class="bottom-nav">
@@ -820,9 +401,9 @@
             <i class="fas fa-th-large"></i>
             <span>الفئات</span>
         </a>
-        <a href="#" class="nav-item" onclick="toggleChat()">
+        <a href="#" class="nav-item" onclick="showPage('messages')">
             <i class="fas fa-comment-dots"></i>
-            <span>الرسائل</span>
+            <span>رسائل</span>
         </a>
         <a href="#" class="nav-item" onclick="showPage('profile')">
             <i class="fas fa-user"></i>
@@ -850,64 +431,67 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         const storage = firebase.storage();
-        
+
         // ==================== GLOBAL VARIABLES ====================
         let currentUser = null;
+        let selectedImage = null;
         let products = [];
-        let selectedImages = [];
-        
+
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', function() {
-            // Auth state listener
+            console.log('App started');
+            
+            // Auth state
             auth.onAuthStateChanged((user) => {
+                console.log('Auth state:', user ? 'logged in' : 'logged out');
                 if (user) {
                     currentUser = user;
                     updateUIForUser(user);
-                    saveUserToFirestore(user);
                 } else {
                     currentUser = null;
                     updateUIForGuest();
                 }
-                
-                // Hide loading screen
-                setTimeout(() => {
-                    document.getElementById('loadingScreen').classList.add('hidden');
-                }, 1000);
+                document.getElementById('loading').classList.add('hidden');
             });
-            
-            // Load products in real-time
-            loadProductsRealtime();
+
+            // Load products
+            loadProducts();
         });
-        
+
         // ==================== AUTH FUNCTIONS ====================
         function updateUIForUser(user) {
             document.getElementById('signInBtn').classList.add('hidden');
-            document.getElementById('messagesBtn').classList.remove('hidden');
             document.getElementById('userMenuBtn').classList.remove('hidden');
-            document.getElementById('fabBtn').style.display = 'flex';
-            document.getElementById('userAvatar').src = user.photoURL || 'https://via.placeholder.com/40';
+            document.getElementById('fabBtn').classList.remove('hidden');
+            document.getElementById('userAvatar').src = user.photoURL || 'https://via.placeholder.com/36';
             document.getElementById('userStatus').textContent = user.displayName || 'مستخدم';
-        }
-        
-        function updateUIForGuest() {
-            document.getElementById('signInBtn').classList.remove('hidden');
-            document.getElementById('messagesBtn').classList.add('hidden');
-            document.getElementById('userMenuBtn').classList.add('hidden');
-            document.getElementById('fabBtn').style.display = 'none';
-            document.getElementById('userStatus').textContent = 'زائر';
-        }
-        
-        function saveUserToFirestore(user) {
+            
+            // Save to Firestore
             db.collection('users').doc(user.uid).set({
                 name: user.displayName,
                 email: user.email,
                 photoURL: user.photoURL,
-                phone: user.phoneNumber,
-                lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                membership: 'free'
+                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
         }
-        
+
+        function updateUIForGuest() {
+            document.getElementById('signInBtn').classList.remove('hidden');
+            document.getElementById('userMenuBtn').classList.add('hidden');
+            document.getElementById('fabBtn').classList.add('hidden');
+            document.getElementById('userStatus').textContent = 'زائر';
+        }
+
+        function showAuthModal() {
+            document.getElementById('authModal').classList.add('active');
+        }
+
+        function closeModal(e, modalId) {
+            if (!e || e.target.id === modalId) {
+                document.getElementById(modalId).classList.remove('active');
+            }
+        }
+
         function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider)
@@ -916,26 +500,26 @@
                     closeModal(null, 'authModal');
                 })
                 .catch((error) => {
-                    showToast('❌ ' + error.message);
+                    console.error('Auth error:', error);
+                    showToast('❌ خطأ في تسجيل الدخول');
                 });
         }
-        
-        function signInWithPhone() {
-            showToast('📱 قريباً: تسجيل برقم الهاتف');
-        }
-        
+
         function logout() {
             if (confirm('تسجيل الخروج؟')) {
                 auth.signOut();
                 showToast('✅ تم تسجيل الخروج');
             }
         }
-        
-        // ==================== PRODUCT FUNCTIONS ====================
-        function loadProductsRealtime() {
+
+        // ==================== PRODUCTS ====================
+        function loadProducts() {
+            console.log('Loading products...');
+            
             db.collection('products')
                 .orderBy('createdAt', 'desc')
                 .onSnapshot((snapshot) => {
+                    console.log('Products loaded:', snapshot.size);
                     products = [];
                     snapshot.forEach((doc) => {
                         products.push({ id: doc.id, ...doc.data() });
@@ -943,71 +527,32 @@
                     renderProducts();
                 }, (error) => {
                     console.error('Error loading products:', error);
-                    showToast('❌ خطأ في تحميل المنتجات');
+                    // Show demo products if error
+                    showDemoProducts();
                 });
         }
-        
+
+        function showDemoProducts() {
+            const demoProducts = [
+                { id: '1', name: 'سماعات بلوتوث لاسلكية', price: 12.50, moq: 50, category: 'electronics', imageUrl: null },
+                { id: '2', name: 'لابتوب احترافي', price: 450.00, moq: 10, category: 'electronics', imageUrl: null },
+                { id: '3', name: 'أقمشة قطنية', price: 8.00, moq: 100, category: 'fashion', imageUrl: null },
+                { id: '4', name: 'أثاث مكتبي', price: 350.00, moq: 5, category: 'home', imageUrl: null }
+            ];
+            products = demoProducts;
+            renderProducts();
+        }
+
         function renderProducts() {
             const hotContainer = document.getElementById('hotProducts');
             const allContainer = document.getElementById('allProducts');
-            
+
             if (products.length === 0) {
-                hotContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-secondary);">لا توجد منتجات بعد. كن أول من يضيف!</div>';
-                allContainer.innerHTML = '<div style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--text-secondary);">لا توجد منتجات بعد.</div>';
+                hotContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-light); width: 100%;">لا توجد منتجات بعد</div>';
+                allContainer.innerHTML = '<div style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--text-light);">لا توجد منتجات بعد. أضف أول منتج!</div>';
                 return;
             }
-            
-            // Hot products (first 5)
-            hotContainer.innerHTML = products.slice(0, 5).map(p => createProductCard(p, true)).join('');
-            
-            // All products
-            allContainer.innerHTML = products.map(p => createProductCard(p, false)).join('');
-        }
-        
-        function createProductCard(product, isHorizontal) {
-            const gradient = getCategoryGradient(product.category);
-            const imageHtml = product.imageUrl ? 
-                `<img src="${product.imageUrl}" alt="${product.name}">` :
-                `<i class="fas fa-box"></i>`;
-            
-            if (isHorizontal) {
-                return `
-                    <div class="product-card" onclick="viewProduct('${product.id}')">
-                        <div class="product-image" style="background: ${gradient};">
-                            ${imageHtml}
-                            <span class="product-badge">جديد</span>
-                            ${product.verified ? '<span class="verified-badge"><i class="fas fa-check"></i></span>' : ''}
-                        </div>
-                        <div class="product-info">
-                            <div class="product-price">$${product.price} <span>/ ${product.moq} pcs</span></div>
-                            <div class="product-title">${product.name}</div>
-                            <div class="product-meta">
-                                <span class="product-moq">MOQ: ${product.moq}</span>
-                                <span class="product-rating"><i class="fas fa-star"></i> 4.8</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                return `
-                    <div class="product-card" onclick="viewProduct('${product.id}')">
-                        <div class="product-image" style="background: ${gradient}; height: 160px;">
-                            ${imageHtml}
-                        </div>
-                        <div class="product-info" style="padding: 12px;">
-                            <div class="product-price" style="font-size: 18px;">$${product.price}</div>
-                            <div class="product-title" style="font-size: 13px; height: 36px;">${product.name}</div>
-                            <div class="product-meta" style="font-size: 12px;">
-                                <span>MOQ: ${product.moq}</span>
-                                <span style="color: var(--secondary);"><i class="fas fa-star"></i> 4.8</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-        
-        function getCategoryGradient(category) {
+
             const gradients = {
                 electronics: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 fashion: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
@@ -1016,9 +561,53 @@
                 industrial: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
                 sports: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
             };
-            return gradients[category] || gradients.electronics;
+
+            const createCard = (p, isHorizontal) => {
+                const gradient = gradients[p.category] || gradients.electronics;
+                const imageHtml = p.imageUrl ? 
+                    `<img src="${p.imageUrl}" style="width: 100%; height: 100%; object-fit: cover;">` :
+                    `<i class="fas fa-box"></i>`;
+                
+                if (isHorizontal) {
+                    return `
+                        <div class="product-card" onclick="viewProduct('${p.id}')">
+                            <div class="product-image" style="background: ${gradient};">
+                                ${imageHtml}
+                                <span class="product-badge">جديد</span>
+                            </div>
+                            <div class="product-info">
+                                <div class="product-price">$${p.price} <span>/ ${p.moq} قطعة</span></div>
+                                <div class="product-title">${p.name}</div>
+                                <div class="product-meta">
+                                    <span>MOQ: ${p.moq}</span>
+                                    <span class="product-rating"><i class="fas fa-star"></i> 4.8</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="product-card" onclick="viewProduct('${p.id}')">
+                            <div class="product-image" style="background: ${gradient}; height: 140px;">
+                                ${imageHtml}
+                            </div>
+                            <div class="product-info" style="padding: 10px;">
+                                <div class="product-price" style="font-size: 16px;">$${p.price}</div>
+                                <div class="product-title" style="font-size: 12px; height: 32px;">${p.name}</div>
+                                <div class="product-meta" style="font-size: 11px;">
+                                    <span>MOQ: ${p.moq}</span>
+                                    <span style="color: var(--secondary);"><i class="fas fa-star"></i> 4.8</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            };
+
+            hotContainer.innerHTML = products.slice(0, 5).map(p => createCard(p, true)).join('');
+            allContainer.innerHTML = products.map(p => createCard(p, false)).join('');
         }
-        
+
         // ==================== ADD PRODUCT ====================
         function showAddProductModal() {
             if (!currentUser) {
@@ -1027,53 +616,45 @@
             }
             document.getElementById('addProductModal').classList.add('active');
         }
-        
-        function previewImages(input) {
+
+        function previewImage(input) {
             const preview = document.getElementById('imagePreview');
             preview.innerHTML = '';
-            selectedImages = [];
-            
-            if (input.files) {
-                Array.from(input.files).forEach((file, index) => {
-                    selectedImages.push(file);
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const div = document.createElement('div');
-                        div.style.cssText = 'position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden;';
-                        div.innerHTML = `
-                            <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
-                            <button onclick="removeImage(${index})" style="position: absolute; top: 4px; right: 4px; background: var(--danger); color: white; border: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; font-size: 12px;">×</button>
-                        `;
-                        preview.appendChild(div);
-                    };
-                    reader.readAsDataURL(file);
-                });
+            selectedImage = null;
+
+            if (input.files && input.files[0]) {
+                selectedImage = input.files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.innerHTML = `<img src="${e.target.result}" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px;">`;
+                };
+                reader.readAsDataURL(input.files[0]);
             }
         }
-        
+
         async function submitProduct(e) {
             e.preventDefault();
             
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري النشر...';
-            
+            submitBtn.textContent = 'جاري النشر...';
+
             try {
                 const name = document.getElementById('prodName').value;
                 const category = document.getElementById('prodCategory').value;
                 const price = parseFloat(document.getElementById('prodPrice').value);
                 const moq = parseInt(document.getElementById('prodMOQ').value);
                 const description = document.getElementById('prodDesc').value;
-                
-                // Upload images
+
                 let imageUrl = null;
-                if (selectedImages.length > 0) {
-                    const file = selectedImages[0];
-                    const storageRef = storage.ref(`products/${currentUser.uid}/${Date.now()}_${file.name}`);
-                    await storageRef.put(file);
+
+                // Upload image if selected
+                if (selectedImage) {
+                    const storageRef = storage.ref(`products/${currentUser.uid}/${Date.now()}_${selectedImage.name}`);
+                    await storageRef.put(selectedImage);
                     imageUrl = await storageRef.getDownloadURL();
                 }
-                
+
                 // Save to Firestore
                 await db.collection('products').add({
                     name,
@@ -1085,97 +666,79 @@
                     sellerId: currentUser.uid,
                     sellerName: currentUser.displayName,
                     sellerPhoto: currentUser.photoURL,
-                    verified: false,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    views: 0,
-                    inquiries: 0
+                    views: 0
                 });
-                
+
                 showToast('✅ تم نشر المنتج بنجاح!');
                 closeModal(null, 'addProductModal');
                 document.getElementById('productForm').reset();
                 document.getElementById('imagePreview').innerHTML = '';
-                selectedImages = [];
-                
+                selectedImage = null;
+
             } catch (error) {
                 console.error('Error:', error);
                 showToast('❌ خطأ: ' + error.message);
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> نشر المنتج';
+                submitBtn.textContent = 'نشر المنتج';
             }
         }
-        
-        // ==================== CHAT ====================
-        function toggleChat() {
-            if (!currentUser) {
-                showAuthModal();
-                return;
-            }
-            const chat = document.getElementById('chatContainer');
-            chat.classList.toggle('active');
-            
-            if (chat.classList.contains('active')) {
-                loadMessages();
-            }
-        }
-        
-        function loadMessages() {
-            const messagesDiv = document.getElementById('chatMessages');
-            messagesDiv.innerHTML = `
-                <div class="message message-received">
-                    مرحباً! كيف يمكنني مساعدتك؟
-                    <div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">الآن</div>
-                </div>
-            `;
-        }
-        
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            
-            if (text) {
-                const messagesDiv = document.getElementById('chatMessages');
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'message message-sent';
-                msgDiv.innerHTML = text + '<div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">الآن</div>';
-                messagesDiv.appendChild(msgDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                input.value = '';
-                
-                // Simulate reply
-                setTimeout(() => {
-                    const reply = document.createElement('div');
-                    reply.className = 'message message-received';
-                    reply.innerHTML = 'شكراً لتواصلك! سأقوم بالرد عليك في أقرب وقت.<div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">الآن</div>';
-                    messagesDiv.appendChild(reply);
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                }, 2000);
-            }
-        }
-        
-        function handleChatKey(e) {
-            if (e.key === 'Enter') sendMessage();
-        }
-        
+
         // ==================== UTILITIES ====================
-        function showAuthModal() {
-            document.getElementById('authModal').classList.add('active');
-        }
-        
-        function closeModal(e, modalId) {
-            if (e === null || e.target === document.getElementById(modalId)) {
-                document.getElementById(modalId).classList.remove('active');
-            }
-        }
-        
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
-        
+
+        function searchProducts(query) {
+            if (!query) {
+                renderProducts();
+                return;
+            }
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+            
+            const allContainer = document.getElementById('allProducts');
+            if (filtered.length === 0) {
+                allContainer.innerHTML = '<div style="grid-column: 1/-1; padding: 40px; text-align: center;">لا توجد نتائج</div>';
+                return;
+            }
+            
+            // Re-render with filtered
+            const gradients = {
+                electronics: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                fashion: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                home: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                beauty: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                industrial: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+                sports: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+            };
+            
+            allContainer.innerHTML = filtered.map(p => {
+                const gradient = gradients[p.category] || gradients.electronics;
+                const imageHtml = p.imageUrl ? 
+                    `<img src="${p.imageUrl}" style="width: 100%; height: 100%; object-fit: cover;">` :
+                    `<i class="fas fa-box"></i>`;
+                return `
+                    <div class="product-card" onclick="viewProduct('${p.id}')">
+                        <div class="product-image" style="background: ${gradient}; height: 140px;">
+                            ${imageHtml}
+                        </div>
+                        <div class="product-info" style="padding: 10px;">
+                            <div class="product-price" style="font-size: 16px;">$${p.price}</div>
+                            <div class="product-title" style="font-size: 12px; height: 32px;">${p.name}</div>
+                            <div class="product-meta" style="font-size: 11px;">
+                                <span>MOQ: ${p.moq}</span>
+                                <span style="color: var(--secondary);"><i class="fas fa-star"></i> 4.8</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         function filterCategory(cat) {
             document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
@@ -1183,40 +746,61 @@
             if (cat === 'all') {
                 renderProducts();
             } else {
-                // Filter products
                 const filtered = products.filter(p => p.category === cat);
-                document.getElementById('allProducts').innerHTML = filtered.map(p => createProductCard(p, false)).join('');
+                const allContainer = document.getElementById('allProducts');
+                
+                if (filtered.length === 0) {
+                    allContainer.innerHTML = '<div style="grid-column: 1/-1; padding: 40px; text-align: center;">لا توجد منتجات في هذه الفئة</div>';
+                    return;
+                }
+                
+                // Re-render filtered
+                const gradients = {
+                    electronics: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    fashion: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                    home: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                    beauty: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                    industrial: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+                    sports: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+                };
+                
+                allContainer.innerHTML = filtered.map(p => {
+                    const gradient = gradients[p.category] || gradients.electronics;
+                    const imageHtml = p.imageUrl ? 
+                        `<img src="${p.imageUrl}" style="width: 100%; height: 100%; object-fit: cover;">` :
+                        `<i class="fas fa-box"></i>`;
+                    return `
+                        <div class="product-card" onclick="viewProduct('${p.id}')">
+                            <div class="product-image" style="background: ${gradient}; height: 140px;">
+                                ${imageHtml}
+                            </div>
+                            <div class="product-info" style="padding: 10px;">
+                                <div class="product-price" style="font-size: 16px;">$${p.price}</div>
+                                <div class="product-title" style="font-size: 12px; height: 32px;">${p.name}</div>
+                                <div class="product-meta" style="font-size: 11px;">
+                                    <span>MOQ: ${p.moq}</span>
+                                    <span style="color: var(--secondary);"><i class="fas fa-star"></i> 4.8</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
             }
         }
-        
-        function searchProducts(query) {
-            if (query.length < 2) {
-                renderProducts();
-                return;
-            }
-            
-            const filtered = products.filter(p => 
-                p.name.toLowerCase().includes(query.toLowerCase()) ||
-                p.description.toLowerCase().includes(query.toLowerCase())
-            );
-            
-            document.getElementById('allProducts').innerHTML = filtered.map(p => createProductCard(p, false)).join('');
+
+        function viewProduct(id) {
+            showToast('📦 عرض المنتج: ' + id);
         }
-        
-        function viewProduct(productId) {
-            showToast('📦 عرض تفاصيل المنتج: ' + productId);
-        }
-        
+
         function showPage(page) {
-            if (page !== 'home' && !currentUser) {
-                showAuthModal();
-                return;
+            if (page !== 'home') {
+                showToast('📄 ' + page + ' - قريباً');
             }
-            showToast('📄 ' + page);
         }
-        
-        function showRFQModal() {
-            showToast('📝 طلب عرض سعر - قريباً');
+
+        function search() {
+            const query = document.getElementById('searchInput').value;
+            searchProducts(query);
         }
     </script>
 </body>
