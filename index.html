@@ -3,117 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Market Pro | السوق المتميز</title>
+    <title>Global Market Pro | النسخة الاحترافية</title>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
-        :root { 
-            --primary: #2563eb; --secondary: #f59e0b; --dark: #1e293b; 
-            --bg: #f1f5f9; --white: #ffffff; --danger: #ef4444; --success: #10b981;
+        :root {
+            --primary: #2563eb; --accent: #f59e0b; --bg: #f8fafc;
+            --text: #1e293b; --card: #ffffff;
+        }
+        body.dark-mode {
+            --bg: #0f172a; --text: #f8fafc; --card: #1e293b;
         }
         
-        body { background: var(--bg); color: #0f172a; padding-bottom: 80px; }
-        .loading { position: fixed; inset: 0; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; color: white; transition: 0.5s; }
-        .loading.hidden { opacity: 0; pointer-events: none; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; padding-bottom: 80px; }
         
-        /* Header */
-        .main-header { background: var(--primary); padding: 16px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .header-top { display: flex; align-items: center; gap: 12px; }
-        .search-box { flex: 1; display: flex; background: white; border-radius: 8px; overflow: hidden; }
-        .search-box input { flex: 1; border: none; padding: 10px; outline: none; }
-        .search-box button { background: var(--secondary); border: none; padding: 0 15px; color: white; }
-        .user-avatar { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; cursor: pointer; }
+        /* Navigation & Header */
+        .header { background: var(--primary); color: white; padding: 15px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .logo { font-weight: 800; font-size: 22px; cursor: pointer; }
+        .actions { display: flex; gap: 15px; align-items: center; }
 
-        /* Featured Section */
-        .section-label { padding: 15px 15px 5px; font-weight: 800; font-size: 18px; display: flex; align-items: center; gap: 8px; }
-        .featured-row { display: flex; overflow-x: auto; gap: 15px; padding: 10px 15px; scrollbar-width: none; }
-        .featured-card { min-width: 280px; background: linear-gradient(135deg, #1e293b, #334155); color: white; border-radius: 15px; padding: 15px; position: relative; display: flex; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .featured-card img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; border: 2px solid var(--secondary); }
-        
-        /* Grid */
-        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
-        .product-card { background: white; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid #e2e8f0; transition: 0.3s; }
-        .product-image { height: 140px; background: #eee; }
-        .product-image img { width: 100%; height: 100%; object-fit: cover; }
-        .product-info { padding: 10px; }
-        .price { color: var(--primary); font-weight: 800; font-size: 16px; }
-        
-        /* Admin Controls */
-        .admin-tools { position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; z-index: 10; }
-        .tool-btn { border: none; padding: 5px; border-radius: 5px; color: white; cursor: pointer; font-size: 12px; }
-        .btn-del { background: var(--danger); }
-        .btn-star { background: var(--secondary); }
+        /* Banner & Search */
+        .search-area { padding: 20px; background: var(--primary); border-radius: 0 0 30px 30px; }
+        .search-bar { background: white; border-radius: 12px; display: flex; padding: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .search-bar input { border: none; flex: 1; padding: 10px; outline: none; border-radius: 10px; }
 
-        /* Navigation */
-        .bottom-nav { position: fixed; bottom: 0; inset-x: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #ddd; }
-        .nav-item { color: #64748b; text-decoration: none; font-size: 11px; text-align: center; }
+        /* Grid & Cards */
+        .container { padding: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border-radius: 20px; overflow: hidden; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border: 1px solid rgba(0,0,0,0.05); }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .card-img { width: 100%; height: 160px; object-fit: cover; }
+        .badge-verified { position: absolute; top: 10px; right: 10px; background: #00b8ff; color: white; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: bold; }
+        .card-content { padding: 12px; }
+        .price { font-size: 18px; font-weight: 800; color: var(--primary); }
+        
+        /* Stats Dashboard for Admin */
+        #adminStats { display: none; background: #10b981; color: white; padding: 15px; margin: 15px; border-radius: 15px; }
+
+        /* Bottom Menu */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid rgba(0,0,0,0.1); }
+        .nav-item { text-align: center; color: #94a3b8; text-decoration: none; font-size: 11px; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
+
+        .btn-wa { background: #25D366; color: white; display: block; text-align: center; padding: 8px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-top: 8px; font-size: 13px; }
         
-        /* Modals */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
-        .modal-overlay.active { display: flex; }
-        .modal { background: white; width: 100%; max-width: 450px; border-radius: 20px; overflow: hidden; }
-        .modal-body { padding: 20px; }
-        .btn-whatsapp { background: #25D366; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 10px; font-weight: bold; margin-top: 10px; }
-        
-        .hidden { display: none !important; }
+        .hidden { display: none; }
     </style>
 </head>
-<body>
+<body id="body">
 
-<div class="loading" id="loading"><i class="fas fa-circle-notch fa-spin fa-3x"></i></div>
-
-<header class="main-header">
-    <div class="header-top">
-        <div class="search-box">
-            <input type="text" placeholder="ابحث في السوق العالمي..." onkeyup="searchProds(this.value)">
-            <button><i class="fas fa-search"></i></button>
-        </div>
-        <img id="userAvatar" class="user-avatar hidden" onclick="logout()">
-        <button onclick="showAuth()" id="loginBtn" class="tool-btn" style="background:var(--secondary)">دخول</button>
+<header class="header">
+    <div class="logo">GLOBAL PRO</div>
+    <div class="actions">
+        <i class="fas fa-moon" onclick="toggleDarkMode()" style="cursor:pointer"></i>
+        <select id="currency" onchange="convertCurrency()" style="background:none; color:white; border:1px solid white; border-radius:5px;">
+            <option value="USD">USD $</option>
+            <option value="SAR">SAR ر.س</option>
+        </select>
     </div>
 </header>
 
-<div id="featuredSection" class="hidden">
-    <div class="section-label"><i class="fas fa-crown" style="color:var(--secondary)"></i> عروض VIP المميزة</div>
-    <div class="featured-row" id="featuredDisplay"></div>
-</div>
-
-<div class="section-label"><i class="fas fa-box-open"></i> كافة المنتجات</div>
-<div class="products-grid" id="productsDisplay"></div>
-
-<div class="modal-overlay" id="detailModal" onclick="closeM(event, 'detailModal')"><div class="modal" id="detailContent"></div></div>
-<div class="modal-overlay" id="addModal" onclick="closeM(event, 'addModal')">
-    <div class="modal"><div class="modal-body">
-        <h3>إضافة منتج</h3><br>
-        <input type="text" id="pN" placeholder="الاسم" style="width:100%; padding:10px; margin-bottom:10px;">
-        <input type="number" id="pP" placeholder="السعر $" style="width:100%; padding:10px; margin-bottom:10px;">
-        <input type="number" id="pM" placeholder="أقل كمية" style="width:100%; padding:10px; margin-bottom:10px;">
-        <textarea id="pD" placeholder="الوصف" style="width:100%; padding:10px; margin-bottom:10px;"></textarea>
-        <input type="file" id="pI" style="margin-bottom:10px;">
-        <button onclick="uploadProd()" id="upBtn" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px;">نشر الآن</button>
-    </div></div>
-</div>
-
-<div class="modal-overlay" id="authModal" onclick="closeM(event, 'authModal')">
-    <div class="modal" style="text-align:center; padding:30px;">
-        <h3>سجل دخولك</h3><br>
-        <button onclick="login()" style="width:100%; padding:12px; background:#4285F4; color:white; border:none; border-radius:8px;"><i class="fab fa-google"></i> جوجل</button>
+<div class="search-area">
+    <div class="search-bar">
+        <input type="text" placeholder="ابحث عن منتج، تاجر، أو تصنيف..." onkeyup="filterItems(this.value)">
+        <button style="background:var(--accent); border:none; color:white; padding:10px 20px; border-radius:10px;"><i class="fas fa-search"></i></button>
     </div>
 </div>
 
+<div id="adminStats">
+    <h4>لوحة تحكم المدير <i class="fas fa-chart-line"></i></h4>
+    <div id="statContent">جاري التحميل...</div>
+</div>
+
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 id="sectionTitle">المنتجات المميزة</h3>
+        <select onchange="sortData(this.value)" style="border:none; background:none; font-family:inherit;">
+            <option value="new">الأحدث</option>
+            <option value="low">الأقل سعراً</option>
+        </select>
+    </div>
+    <div class="grid" id="mainGrid"></div>
+</div>
+
 <nav class="bottom-nav">
-    <a href="#" class="nav-item active"><i class="fas fa-home" style="display:block; font-size:20px;"></i>الرئيسية</a>
-    <a href="#" onclick="showAdd()" class="nav-item"><i class="fas fa-plus-circle" style="display:block; font-size:20px;"></i>بيع</a>
-    <a href="https://wa.me/967738520546" class="nav-item"><i class="fas fa-headset" style="display:block; font-size:20px;"></i>دعم</a>
+    <div class="nav-item active" onclick="location.reload()"><i class="fas fa-home fa-lg"></i><br>الرئيسية</div>
+    <div class="nav-item" onclick="showAdd()"><i class="fas fa-plus-circle fa-lg"></i><br>بيع</div>
+    <div class="nav-item" onclick="showCategories()"><i class="fas fa-th-large fa-lg"></i><br>أقسام</div>
+    <div class="nav-item" onclick="toggleAdmin()"><i class="fas fa-user-shield fa-lg"></i><br>المدير</div>
 </nav>
 
 <script>
@@ -128,113 +111,83 @@
     };
 
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth(), db = firebase.firestore(), storage = firebase.storage();
-    let user = null, allProds = [];
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    let allProducts = [];
 
-    auth.onAuthStateChanged(u => {
-        user = u; document.getElementById('loading').classList.add('hidden');
-        if(u){
-            document.getElementById('loginBtn').classList.add('hidden');
-            document.getElementById('userAvatar').src = u.photoURL;
-            document.getElementById('userAvatar').classList.remove('hidden');
-        }
-        fetchData();
-    });
-
-    function fetchData() {
+    // 1. نظام جلب البيانات المتقدم
+    function loadContent() {
         db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snap => {
-            allProds = []; snap.forEach(doc => allProds.push({id: doc.id, ...doc.data()}));
-            render();
+            allProducts = [];
+            snap.forEach(doc => allProducts.push({id: doc.id, ...doc.data()}));
+            render(allProducts);
+            updateStats();
         });
     }
 
-    function render() {
-        const isAdmin = user && user.email === ADMIN_EMAIL;
-        const featured = allProds.filter(p => p.isFeatured);
-        const normal = allProds;
-
-        // Render Featured
-        const fDiv = document.getElementById('featuredDisplay');
-        if(featured.length > 0) {
-            document.getElementById('featuredSection').classList.remove('hidden');
-            fDiv.innerHTML = featured.map(p => `
-                <div class="featured-card" onclick="view('${p.id}')">
-                    <img src="${p.imageUrl}">
-                    <div>
-                        <div style="font-size:12px; color:var(--secondary)">منتج مختار</div>
-                        <div style="font-weight:bold; font-size:14px; margin:4px 0;">${p.name}</div>
-                        <div style="color:var(--success); font-weight:800;">$${p.price}</div>
+    function render(data) {
+        const grid = document.getElementById('mainGrid');
+        grid.innerHTML = data.map(p => `
+            <div class="card">
+                ${p.isVerified ? '<div class="badge-verified"><i class="fas fa-check"></i> موثوق</div>' : ''}
+                <img src="${p.imageUrl || 'https://via.placeholder.com/150'}" class="card-img">
+                <div class="card-content">
+                    <div class="price" data-usd="${p.price}">$${p.price}</div>
+                    <div style="font-size:14px; height:40px; overflow:hidden;">${p.name}</div>
+                    <div style="font-size:11px; color:gray; margin-top:5px;">
+                        <i class="fas fa-star" style="color:var(--accent)"></i> 4.9 (20 تقييم)
                     </div>
-                </div>
-            `).join('');
-        } else { document.getElementById('featuredSection').classList.add('hidden'); }
-
-        // Render All
-        document.getElementById('productsDisplay').innerHTML = normal.map(p => `
-            <div class="product-card">
-                ${isAdmin ? `<div class="admin-tools">
-                    <button class="tool-btn btn-star" onclick="toggleFeatured('${p.id}', ${p.isFeatured}, event)"><i class="fas fa-star"></i></button>
-                    <button class="tool-btn btn-del" onclick="del('${p.id}', event)"><i class="fas fa-trash"></i></button>
-                </div>` : ''}
-                <div onclick="view('${p.id}')">
-                    <div class="product-image"><img src="${p.imageUrl}"></div>
-                    <div class="product-info">
-                        <div class="price">$${p.price}</div>
-                        <div style="font-size:13px; margin:4px 0;">${p.name}</div>
-                        <div style="font-size:10px; color:gray;">MOQ: ${p.moq}</div>
-                    </div>
+                    <a href="https://wa.me/967738520546?text=مهتم بـ ${p.name}" onclick="trackClick('${p.id}')" class="btn-wa">
+                        <i class="fab fa-whatsapp"></i> اطلب الآن
+                    </a>
                 </div>
             </div>
         `).join('');
     }
 
-    window.toggleFeatured = async (id, current, e) => {
-        e.stopPropagation();
-        await db.collection('products').doc(id).update({ isFeatured: !current });
-    };
-
-    window.view = (id) => {
-        const p = allProds.find(x => x.id === id);
-        document.getElementById('detailContent').innerHTML = `
-            <div class="modal-body">
-                <img src="${p.imageUrl}" style="width:100%; border-radius:15px; margin-bottom:15px;">
-                <h2>${p.name}</h2>
-                <p style="color:gray; margin:10px 0;">${p.description}</p>
-                <div style="font-size:24px; color:var(--primary); font-weight:800;">$${p.price}</div>
-                <a href="https://wa.me/967738520546?text=استفسار عن: ${p.name}" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> اطلب الآن</a>
-            </div>
-        `;
-        document.getElementById('detailModal').classList.add('active');
-    };
-
-    async function uploadProd() {
-        const btn = document.getElementById('upBtn'); btn.disabled = true;
-        const file = document.getElementById('pI').files[0];
-        let url = "";
-        if(file) {
-            const ref = storage.ref(`p/${Date.now()}`);
-            await ref.put(file); url = await ref.getDownloadURL();
-        }
-        await db.collection('products').add({
-            name: document.getElementById('pN').value,
-            price: document.getElementById('pP').value,
-            moq: document.getElementById('pM').value,
-            description: document.getElementById('pD').value,
-            imageUrl: url,
-            isFeatured: false,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        location.reload();
+    // 2. ميزة تتبع النقرات (للمدير)
+    async function trackClick(id) {
+        const ref = db.collection('products').doc(id);
+        await ref.update({ clicks: firebase.firestore.FieldValue.increment(1) });
     }
 
-    window.del = async (id, e) => { e.stopPropagation(); if(confirm('حذف؟')) await db.collection('products').doc(id).delete(); };
-    window.showAdd = () => user ? document.getElementById('addModal').classList.add('active') : showAuth();
-    window.showAuth = () => document.getElementById('authModal').classList.add('active');
-    window.closeM = (e, id) => { if(!e || e.target.classList.contains('modal-overlay')) document.getElementById(id).classList.remove('active'); };
-    window.login = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-    window.logout = () => auth.signOut().then(() => location.reload());
-    window.searchProds = (q) => { const f = allProds.filter(p => p.name.toLowerCase().includes(q.toLowerCase())); renderFiltered(f); };
-    function renderFiltered(data) { /* نفس وظيفة render لكن لبيانات البحث فقط */ }
+    // 3. لوحة إحصائيات المدير
+    function updateStats() {
+        const totalClicks = allProducts.reduce((sum, p) => sum + (p.clicks || 0), 0);
+        document.getElementById('statContent').innerHTML = `
+            إجمالي نقرات التواصل: <strong>${totalClicks}</strong> نقرة<br>
+            عدد التجار النشطين: <strong>${new Set(allProducts.map(p => p.sellerEmail)).size}</strong>
+        `;
+    }
+
+    // 4. الوضع الليلي
+    function toggleDarkMode() {
+        document.getElementById('body').classList.toggle('dark-mode');
+        const icon = document.querySelector('.fa-moon');
+        icon.classList.toggle('fa-sun');
+    }
+
+    // 5. محول العملات (بسيط)
+    function convertCurrency() {
+        const curr = document.getElementById('currency').value;
+        const rate = curr === 'SAR' ? 3.75 : 1;
+        document.querySelectorAll('.price').forEach(el => {
+            const usd = el.getAttribute('data-usd');
+            el.innerText = curr === 'SAR' ? `${(usd * rate).toFixed(2)} ر.س` : `$${usd}`;
+        });
+    }
+
+    function toggleAdmin() {
+        const stats = document.getElementById('adminStats');
+        stats.style.display = stats.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function filterItems(val) {
+        const filtered = allProducts.filter(p => p.name.toLowerCase().includes(val.toLowerCase()));
+        render(filtered);
+    }
+
+    loadContent();
 </script>
 </body>
 </html>
