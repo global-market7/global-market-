@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Market Pro - B2B Marketplace</title>
+    <title>Global Market Pro | لوحة التحكم والسوق</title>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -15,227 +15,136 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
-        
         :root { 
-            --primary: #2563eb; 
-            --primary-dark: #1d4ed8;
-            --secondary: #f59e0b;
-            --dark: #1e293b;
-            --text: #0f172a;
-            --text-light: #64748b;
-            --bg: #f1f5f9;
-            --white: #ffffff;
-            --border: #e2e8f0;
-            --success: #10b981;
-            --danger: #ef4444;
+            --primary: #2563eb; --primary-dark: #1d4ed8; --secondary: #f59e0b;
+            --dark: #1e293b; --text: #0f172a; --text-light: #64748b;
+            --bg: #f1f5f9; --white: #ffffff; --border: #e2e8f0;
+            --success: #10b981; --danger: #ef4444;
         }
         
         body { background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 80px; }
         
-        /* Loading Screen */
-        .loading {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--primary); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 9999;
-            color: white;
-        }
-        .loading i { font-size: 48px; margin-bottom: 16px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .loading.hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+        /* Loading & UI */
+        .loading { position: fixed; inset: 0; background: var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; transition: 0.5s; }
+        .loading.hidden { opacity: 0; pointer-events: none; }
         
-        /* Header & Navigation */
-        .top-bar {
-            background: var(--primary-dark); color: white; padding: 8px 16px;
-            font-size: 12px; display: flex; justify-content: space-between;
-        }
-        .main-header { background: var(--primary); padding: 16px; position: sticky; top: 0; z-index: 1000; }
+        .main-header { background: var(--primary); padding: 16px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .header-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
         .logo { color: white; text-decoration: none; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-        .logo i { color: var(--secondary); font-size: 28px; }
         
         .search-box { flex: 1; display: flex; background: white; border-radius: 8px; overflow: hidden; }
-        .search-box input { flex: 1; border: none; padding: 12px; font-size: 14px; outline: none; }
-        .search-box button { background: var(--secondary); border: none; padding: 0 16px; color: white; cursor: pointer; }
+        .search-box input { flex: 1; border: none; padding: 10px; outline: none; }
+        .search-box button { background: var(--secondary); border: none; padding: 0 15px; color: white; }
         
-        .header-actions { display: flex; gap: 16px; align-items: center; }
-        .header-btn { color: white; text-decoration: none; font-size: 12px; text-align: center; cursor: pointer; }
-        .header-btn i { display: block; font-size: 20px; margin-bottom: 2px; }
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid white; cursor: pointer; }
+        .user-avatar { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; cursor: pointer; }
         
-        .category-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; }
-        .category-tabs::-webkit-scrollbar { display: none; }
-        .cat-tab { padding: 8px 16px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap; }
-        .cat-tab.active, .cat-tab:hover { background: white; color: var(--primary); }
-        
-        /* Layout Components */
-        .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 16px; background: white; margin-bottom: 12px; }
-        .quick-action { text-align: center; cursor: pointer; }
-        .quick-icon { width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary), #3b82f6); color: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 8px; box-shadow: 0 4px 15px rgba(37,99,235,0.3); }
-        .quick-action span { font-size: 12px; color: var(--text); font-weight: 600; }
-        
-        .section-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: white; }
-        .section-title { font-size: 18px; font-weight: 700; }
-        
-        /* Products Cards */
-        .products-scroll { display: flex; gap: 12px; padding: 0 16px 16px; overflow-x: auto; background: white; }
-        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 16px 16px; background: white; }
-        
-        .product-card { min-width: 160px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border); cursor: pointer; }
-        .product-image { height: 160px; position: relative; display: flex; align-items: center; justify-content: center; font-size: 48px; color: white; overflow: hidden; }
+        /* Category Tabs */
+        .category-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; scrollbar-width: none; }
+        .cat-tab { padding: 8px 16px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+        .cat-tab.active { background: white; color: var(--primary); font-weight: bold; }
+
+        /* Products Grid */
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; border: 1px solid var(--border); transition: 0.3s; }
+        .product-image { height: 150px; background: #eee; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .product-image img { width: 100%; height: 100%; object-fit: cover; }
-        .product-badge { position: absolute; top: 8px; left: 8px; background: var(--danger); color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
-        .product-info { padding: 12px; }
-        .product-price { color: var(--primary); font-size: 18px; font-weight: 800; }
-        .product-title { font-size: 13px; height: 36px; overflow: hidden; margin: 5px 0; font-weight: 600; }
-        .product-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-light); }
+        .product-info { padding: 10px; }
+        .product-price { color: var(--primary); font-size: 16px; font-weight: 800; }
+        .product-title { font-size: 13px; font-weight: 600; margin: 4px 0; height: 38px; overflow: hidden; }
         
-        /* Modals & Forms */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        /* Admin Delete Button */
+        .del-btn { position: absolute; top: 8px; right: 8px; background: var(--danger); color: white; border: none; padding: 6px 8px; border-radius: 6px; cursor: pointer; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        /* Modals */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
         .modal-overlay.active { display: flex; }
-        .modal { background: white; border-radius: 20px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; position: relative; }
-        .modal-header { background: var(--primary); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
-        .modal-body { padding: 20px; }
-        
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; outline: none; }
-        
-        .btn-primary { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .btn-whatsapp { background: #25D366; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .modal { background: white; width: 100%; max-width: 450px; border-radius: 20px; overflow: hidden; animation: slideUp 0.3s; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; }
+        .modal-body { padding: 20px; max-height: 80vh; overflow-y: auto; }
 
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-light); text-decoration: none; font-size: 12px; }
+        .btn-primary { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-whatsapp { background: #25D366; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
+
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 10px 20px; border-radius: 50px; z-index: 3000; display: none; }
+        
+        .bottom-nav { position: fixed; bottom: 0; inset-x: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--border); }
+        .nav-item { color: var(--text-light); text-decoration: none; font-size: 11px; text-align: center; }
         .nav-item.active { color: var(--primary); }
-
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: var(--dark); color: white; padding: 12px 24px; border-radius: 50px; transition: 0.4s; z-index: 3000; opacity: 0; }
-        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .nav-item i { display: block; font-size: 20px; margin-bottom: 3px; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="loading" id="loading">
-        <i class="fas fa-globe"></i>
-        <div>جاري تهيئة السوق...</div>
-    </div>
-
-    <div class="top-bar">
-        <div><i class="fas fa-headset"></i> الدعم: +967 738 520 546</div>
-        <div id="userStatus">زائر</div>
-    </div>
+    <div class="loading" id="loading"><i class="fas fa-spinner fa-spin fa-3x"></i></div>
 
     <header class="main-header">
         <div class="header-top">
-            <a href="#" class="logo">
-                <i class="fas fa-globe"></i>
-                <span>Global Pro</span>
-            </a>
+            <a href="#" class="logo"><i class="fas fa-globe"></i> Global Pro</a>
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="ماذا تبحث اليوم؟" onkeyup="searchProducts(this.value)">
+                <input type="text" id="searchInput" placeholder="ابحث عن منتج..." onkeyup="searchProducts(this.value)">
                 <button><i class="fas fa-search"></i></button>
             </div>
-            <div class="header-actions">
-                <div id="signInBtn" class="header-btn" onclick="showAuthModal()">
-                    <i class="fas fa-user-circle"></i>
-                    <span>دخول</span>
-                </div>
-                <div id="userMenuBtn" class="header-btn hidden">
-                    <img id="userAvatar" src="" class="user-avatar" onclick="logout()">
-                </div>
+            <div id="authArea">
+                <button onclick="showAuthModal()" id="signInBtn" class="cat-tab" style="background: var(--secondary)">دخول</button>
+                <img id="userAvatar" class="user-avatar hidden" onclick="logout()">
             </div>
         </div>
-        
-        <div class="category-tabs">
-            <button class="cat-tab active" onclick="filterCategory('all')">الكل</button>
-            <button class="cat-tab" onclick="filterCategory('electronics')">إلكترونيات</button>
-            <button class="cat-tab" onclick="filterCategory('fashion')">أزياء</button>
-            <button class="cat-tab" onclick="filterCategory('home')">منزل</button>
-            <button class="cat-tab" onclick="filterCategory('beauty')">جمال</button>
+        <div class="category-tabs" id="catTabs">
+            <button class="cat-tab active" onclick="filterCat('all', this)">الكل</button>
+            <button class="cat-tab" onclick="filterCat('electronics', this)">إلكترونيات</button>
+            <button class="cat-tab" onclick="filterCat('fashion', this)">أزياء</button>
+            <button class="cat-tab" onclick="filterCat('home', this)">منزل</button>
         </div>
     </header>
 
-    <main>
-        <div class="quick-actions">
-            <div class="quick-action" onclick="showAddProductModal()">
-                <div class="quick-icon"><i class="fas fa-plus"></i></div>
-                <span>بيع منتج</span>
-            </div>
-            <div class="quick-action" onclick="showToast('قريباً: العروض الحصرية')">
-                <div class="quick-icon" style="background: linear-gradient(135deg, #f59e0b, #ef4444);"><i class="fas fa-bolt"></i></div>
-                <span>عروض</span>
-            </div>
-            <div class="quick-action" onclick="window.open('https://wa.me/967738520546')">
-                <div class="quick-icon" style="background: #25D366;"><i class="fab fa-whatsapp"></i></div>
-                <span>دعم</span>
-            </div>
-            <div class="quick-action" onclick="filterCategory('electronics')">
-                <div class="quick-icon"><i class="fas fa-star"></i></div>
-                <span>مميز</span>
-            </div>
-        </div>
+    <div class="products-grid" id="productsDisplay"></div>
 
-        <div class="section-header">
-            <h2 class="section-title">🔥 وصل حديثاً</h2>
-        </div>
-        <div class="products-scroll" id="hotProducts"></div>
-
-        <div class="section-header">
-            <h2 class="section-title">📦 استكشف المنتجات</h2>
-        </div>
-        <div class="products-grid" id="allProducts"></div>
-    </main>
-
-    <div class="modal-overlay" id="authModal" onclick="closeModal(event, 'authModal')">
-        <div class="modal">
-            <div class="modal-header"><h3>تسجيل الدخول</h3><button class="close-btn" onclick="closeModal(null, 'authModal')">&times;</button></div>
-            <div class="modal-body" style="text-align: center;">
-                <p style="margin-bottom: 20px;">سجل دخولك لرفع منتجاتك والوصول للميزات الكاملة</p>
-                <button class="btn-primary" onclick="signInWithGoogle()"><i class="fab fa-google"></i> المتابعة مع جوجل</button>
-            </div>
-        </div>
+    <div class="modal-overlay" id="detailModal" onclick="closeM(event, 'detailModal')">
+        <div class="modal" id="detailContent"></div>
     </div>
 
-    <div class="modal-overlay" id="addProductModal" onclick="closeModal(event, 'addProductModal')">
+    <div class="modal-overlay" id="addModal" onclick="closeM(event, 'addModal')">
         <div class="modal">
-            <div class="modal-header"><h3>إضافة منتج للسوق</h3><button class="close-btn" onclick="closeModal(null, 'addProductModal')">&times;</button></div>
+            <div class="modal-header"><h3>إضافة منتج جديد</h3><button onclick="closeM(null, 'addModal')" style="background:none; border:none; color:white; font-size:20px;">&times;</button></div>
             <div class="modal-body">
-                <form onsubmit="submitProduct(event)">
-                    <div class="form-group"><label>اسم المنتج</label><input type="text" id="pName" required></div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                        <div class="form-group"><label>السعر ($)</label><input type="number" id="pPrice" required></div>
-                        <div class="form-group"><label>أقل كمية (MOQ)</label><input type="number" id="pMoq" required></div>
-                    </div>
-                    <div class="form-group"><label>الفئة</label>
-                        <select id="pCat">
-                            <option value="electronics">إلكترونيات</option>
-                            <option value="fashion">أزياء</option>
-                            <option value="home">منزل</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>الوصف</label><textarea id="pDesc" rows="3"></textarea></div>
-                    <div class="form-group"><label>صورة المنتج</label><input type="file" id="pFile" accept="image/*"></div>
-                    <button type="submit" id="subBtn" class="btn-primary">نشر الآن</button>
+                <form onsubmit="handleUpload(event)">
+                    <input type="text" id="pN" placeholder="اسم المنتج" required style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
+                    <input type="number" id="pP" placeholder="السعر ($)" required style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
+                    <input type="number" id="pM" placeholder="أقل كمية طلب (MOQ)" required style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
+                    <select id="pC" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
+                        <option value="electronics">إلكترونيات</option>
+                        <option value="fashion">أزياء</option>
+                        <option value="home">منزل</option>
+                    </select>
+                    <textarea id="pD" placeholder="وصف المنتج" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;"></textarea>
+                    <input type="file" id="pI" accept="image/*" style="margin-bottom:15px;">
+                    <button type="submit" id="upBtn" class="btn-primary">نشر المنتج</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="detailModal" onclick="closeModal(event, 'detailModal')">
-        <div class="modal" id="detailContent"></div>
+    <div class="modal-overlay" id="authModal" onclick="closeM(event, 'authModal')">
+        <div class="modal" style="text-align:center; padding:30px;">
+            <h3>تسجيل الدخول</h3>
+            <p style="margin:15px 0; color:var(--text-light);">سجل دخولك لتتمكن من إضافة منتجاتك</p>
+            <button onclick="googleLogin()" class="btn-primary" style="background:#4285F4;"><i class="fab fa-google"></i> عبر جوجل</button>
+        </div>
     </div>
 
     <div id="toast" class="toast"></div>
+
     <nav class="bottom-nav">
-        <a href="#" class="nav-item active"><i class="fas fa-home"></i><span>الرئيسية</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-search"></i><span>استكشف</span></a>
-        <a href="#" class="nav-item" onclick="showAddProductModal()"><i class="fas fa-plus-circle"></i><span>بيع</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-user"></i><span>حسابي</span></a>
+        <a href="#" class="nav-item active"><i class="fas fa-home"></i>الرئيسية</a>
+        <a href="#" onclick="showAdd()" class="nav-item"><i class="fas fa-plus-circle"></i>بيع</a>
+        <a href="#" class="nav-item"><i class="fas fa-heart"></i>المفضلة</a>
     </nav>
 
     <script>
-        // Firebase Config
+        // --- 1. الإعدادات والتهيئبة ---
+        const ADMIN_EMAIL = "Csnap9489@gmail.com";
         const firebaseConfig = {
             apiKey: "AIzaSyB650D7BDg0f4q7cf9kndvKW5Qz8H1nFj0",
             authDomain: "mymarket-ec08e.firebaseapp.com",
@@ -250,135 +159,127 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        let allProductsData = [];
+        let allProducts = [];
         let user = null;
 
-        // Auth Logic
+        // --- 2. إدارة المستخدم ---
         auth.onAuthStateChanged(u => {
             user = u;
             document.getElementById('loading').classList.add('hidden');
             if(u) {
                 document.getElementById('signInBtn').classList.add('hidden');
-                document.getElementById('userMenuBtn').classList.remove('hidden');
                 document.getElementById('userAvatar').src = u.photoURL;
-                document.getElementById('userStatus').innerText = u.displayName;
+                document.getElementById('userAvatar').classList.remove('hidden');
             } else {
                 document.getElementById('signInBtn').classList.remove('hidden');
-                document.getElementById('userMenuBtn').classList.add('hidden');
-                document.getElementById('userStatus').innerText = "زائر";
+                document.getElementById('userAvatar').classList.add('hidden');
             }
+            fetchProducts();
         });
 
-        function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then(() => closeModal(null, 'authModal'));
+        function googleLogin() {
+            const p = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(p).then(() => location.reload());
         }
-
         function logout() { if(confirm('تسجيل خروج؟')) auth.signOut(); }
 
-        // Data Logic
-        function loadProducts() {
+        // --- 3. جلب وعرض البيانات ---
+        function fetchProducts() {
             db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snap => {
-                allProductsData = [];
-                snap.forEach(doc => allProductsData.push({id: doc.id, ...doc.data()}));
-                renderUI(allProductsData);
+                allProducts = [];
+                snap.forEach(doc => allProducts.push({id: doc.id, ...doc.data()}));
+                render(allProducts);
             });
         }
 
-        function renderUI(data) {
-            const hot = document.getElementById('hotProducts');
-            const all = document.getElementById('allProducts');
+        function render(data) {
+            const container = document.getElementById('productsDisplay');
+            const isAdmin = user && user.email === ADMIN_EMAIL;
             
-            const html = data.map(p => `
-                <div class="product-card" onclick="viewProduct('${p.id}')">
-                    <div class="product-image">
-                        ${p.imageUrl ? `<img src="${p.imageUrl}">` : `<i class="fas fa-box" style="color:#ddd"></i>`}
-                        <span class="product-badge">جديد</span>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-price">$${p.price}</div>
-                        <div class="product-title">${p.name}</div>
-                        <div class="product-meta"><span>MOQ: ${p.moq}</span><span><i class="fas fa-star" style="color:var(--secondary)"></i> 4.9</span></div>
+            container.innerHTML = data.map(p => `
+                <div class="product-card">
+                    ${isAdmin ? `<button class="del-btn" onclick="deleteProd('${p.id}', event)"><i class="fas fa-trash"></i></button>` : ''}
+                    <div onclick="viewProd('${p.id}')">
+                        <div class="product-image">
+                            <img src="${p.imageUrl || 'https://via.placeholder.com/150'}">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-price">$${p.price}</div>
+                            <div class="product-title">${p.name}</div>
+                            <div style="font-size:11px; color:gray;">أقل طلب: ${p.moq}</div>
+                        </div>
                     </div>
                 </div>
             `).join('');
-
-            hot.innerHTML = html;
-            all.innerHTML = html;
         }
 
-        // The View Product Logic (Merged Modification)
-        window.viewProduct = function(id) {
-            const p = allProductsData.find(item => item.id === id);
-            if(!p) return;
-
-            const detailContent = document.getElementById('detailContent');
-            detailContent.innerHTML = `
-                <div class="modal-header">
-                    <h3>تفاصيل المنتج</h3>
-                    <button class="close-btn" onclick="closeModal(null, 'detailModal')">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <img src="${p.imageUrl || ''}" style="width:100%; border-radius:15px; margin-bottom:15px;">
+        // --- 4. العمليات (حذف، تفاصيل، إضافة) ---
+        window.viewProd = function(id) {
+            const p = allProducts.find(x => x.id === id);
+            const content = document.getElementById('detailContent');
+            content.innerHTML = `
+                <div class="modal-header"><h3>تفاصيل المنتج</h3><button onclick="closeM(null, 'detailModal')" style="background:none; border:none; color:white; font-size:20px;">&times;</button></div>
+                <div class="modal-body" style="text-align:center;">
+                    <img src="${p.imageUrl}" style="width:100%; border-radius:10px; margin-bottom:15px;">
                     <h2 style="margin-bottom:10px;">${p.name}</h2>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <span style="font-size:24px; color:var(--primary); font-weight:800;">$${p.price}</span>
-                        <span style="background:#eee; padding:5px 12px; border-radius:20px; font-size:12px;">أقل طلب: ${p.moq}</span>
-                    </div>
-                    <p style="color:var(--text-light); margin-bottom:20px;">${p.description || 'لا يوجد وصف متاح.'}</p>
-                    
-                    <a href="https://wa.me/967738520546?text=أريد الاستفسار عن: ${p.name}" target="_blank" class="btn-primary btn-whatsapp">
-                        <i class="fab fa-whatsapp"></i> اطلب عبر واتساب
-                    </a>
+                    <div style="font-size:20px; color:var(--primary); font-weight:bold; margin-bottom:10px;">$${p.price}</div>
+                    <p style="color:var(--text-light); font-size:14px; margin-bottom:20px;">${p.description || 'لا يوجد وصف.'}</p>
+                    <a href="https://wa.me/967738520546?text=أريد طلب: ${p.name}" class="btn-primary btn-whatsapp"><i class="fab fa-whatsapp"></i> اطلب الآن عبر واتساب</a>
                 </div>
             `;
             document.getElementById('detailModal').classList.add('active');
         };
 
-        // Add Product Logic
-        async function submitProduct(e) {
-            e.preventDefault();
-            if(!user) return showAuthModal();
+        window.deleteProd = async function(id, e) {
+            e.stopPropagation();
+            if(confirm('حذف هذا المنتج نهائياً؟')) {
+                await db.collection('products').doc(id).delete();
+                toast('تم الحذف بنجاح');
+            }
+        };
 
-            const btn = document.getElementById('subBtn');
+        async function handleUpload(e) {
+            e.preventDefault();
+            const btn = document.getElementById('upBtn');
             btn.disabled = true; btn.innerText = "جاري الرفع...";
 
-            const file = document.getElementById('pFile').files[0];
             let url = "";
-
+            const file = document.getElementById('pI').files[0];
             if(file) {
-                const ref = storage.ref(`prods/${Date.now()}`);
+                const ref = storage.ref(`products/${Date.now()}`);
                 await ref.put(file);
                 url = await ref.getDownloadURL();
             }
 
             await db.collection('products').add({
-                name: document.getElementById('pName').value,
-                price: document.getElementById('pPrice').value,
-                moq: document.getElementById('pMoq').value,
-                category: document.getElementById('pCat').value,
-                description: document.getElementById('pDesc').value,
+                name: document.getElementById('pN').value,
+                price: document.getElementById('pP').value,
+                moq: document.getElementById('pM').value,
+                category: document.getElementById('pC').value,
+                description: document.getElementById('pD').value,
                 imageUrl: url,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            closeModal(null, 'addProductModal');
-            showToast('✅ تم نشر المنتج!');
-            btn.disabled = false; btn.innerText = "نشر الآن";
+            closeM(null, 'addModal');
+            toast('تم النشر بنجاح!');
+            btn.disabled = false; btn.innerText = "نشر المنتج";
         }
 
-        // Global UI Helpers
+        // --- 5. أدوات المساعدة ---
+        window.showAdd = () => user ? document.getElementById('addModal').classList.add('active') : showAuthModal();
         window.showAuthModal = () => document.getElementById('authModal').classList.add('active');
-        window.showAddProductModal = () => user ? document.getElementById('addProductModal').classList.add('active') : showAuthModal();
-        window.closeModal = (e, id) => { if(!e || e.target.classList.contains('modal-overlay')) document.getElementById(id).classList.remove('active'); };
-        window.showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); };
+        window.closeM = (e, id) => { if(!e || e.target.classList.contains('modal-overlay')) document.getElementById(id).classList.remove('active'); };
+        window.toast = (m) => { const t = document.getElementById('toast'); t.innerText = m; t.style.display='block'; setTimeout(() => t.style.display='none', 3000); };
         
-        window.searchProducts = (q) => {
-            const filtered = allProductsData.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
-            renderUI(filtered);
+        window.filterCat = (c, btn) => {
+            document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if(c === 'all') render(allProducts);
+            else render(allProducts.filter(p => p.category === c));
         };
 
-        loadProducts();
+        window.searchProducts = (q) => render(allProducts.filter(p => p.name.toLowerCase().includes(q.toLowerCase())));
     </script>
 </body>
 </html>
