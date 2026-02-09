@@ -1706,9 +1706,7 @@
                     <span data-i18n="notifications.markAll">تحديد الكل مقروء</span>
                 </button>
             </div>
-            <div class="notifications-list" id="notificationsList">
-                <!-- Notifications loaded dynamically -->
-            </div>
+            <div class="notifications-list" id="notificationsList"></div>
         </div>
     </nav>
 
@@ -1721,9 +1719,7 @@
             <h2><i class="fas fa-shopping-cart"></i> <span data-i18n="cart.title">سلة المشتريات</span></h2>
             <button class="close-btn" onclick="toggleCart()">&times;</button>
         </div>
-        <div class="cart-items" id="cartItems">
-            <!-- Cart items loaded dynamically -->
-        </div>
+        <div class="cart-items" id="cartItems"></div>
         <div class="cart-footer">
             <div class="cart-summary">
                 <div class="summary-row">
@@ -1757,7 +1753,7 @@
             <div class="hero">
                 <div class="hero-content">
                     <h1 data-i18n="hero.title">منصة التجارة العالمية الموثوقة 🌐</h1>
-                    <p data-i18n="hero.subtitle">اكتشف ملايين المنتجات من موردين موثوقين حول العالم بأسعار الجملة المنافسة</p>
+                    <p data-i18n="hero.subtitle">اكتشف ملايين المنتجات من موردين موثوقين حول العالم</p>
                     <div class="search-container">
                         <input type="text" id="searchInput" placeholder="ابحث عن منتجات، موردين، أو تصنيفات..." data-i18n-placeholder="hero.searchPlaceholder" onkeyup="searchProducts()">
                         <button class="btn btn-primary" onclick="searchProducts()">
@@ -1791,9 +1787,7 @@
                     <i class="fas fa-th-large" style="color: var(--primary);"></i>
                     <span data-i18n="categories.title">تصفح حسب التصنيف</span>
                 </h2>
-                <div class="categories-scroll" id="categoriesScroll">
-                    <!-- Categories loaded dynamically -->
-                </div>
+                <div class="categories-scroll" id="categoriesScroll"></div>
             </div>
 
             <div class="products-section">
@@ -1842,7 +1836,7 @@
                         <i class="fas fa-shipping-fast" style="color: var(--primary);"></i>
                         <span data-i18n="tracking.title">تتبع شحنتك 📦</span>
                     </h2>
-                    <p style="color: #64748b; margin-bottom: 25px;" data-i18n="tracking.subtitle">أدخل رقم التتبع لمعرفة حالة شحنتك الحالية</p>
+                    <p style="color: #64748b; margin-bottom: 25px;" data-i18n="tracking.subtitle">أدخل رقم التتبع لمعرفة حالة شحنتك</p>
                     
                     <div class="tracking-form">
                         <input type="text" id="trackingNumber" placeholder="مثال: TRK-123456789" data-i18n-placeholder="tracking.placeholder">
@@ -1862,9 +1856,7 @@
                             </div>
                         </div>
 
-                        <div class="tracking-timeline" id="trackingTimeline">
-                            <!-- Timeline loaded dynamically -->
-                        </div>
+                        <div class="tracking-timeline" id="trackingTimeline"></div>
                     </div>
                 </div>
 
@@ -1986,15 +1978,11 @@
                         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
                             <div style="background: #f8fafc; border-radius: 20px; padding: 30px;">
                                 <h3 style="color: var(--dark); margin-bottom: 25px;" data-i18n="dash.recentOrders">آخر الطلبات</h3>
-                                <div id="recentOrdersList">
-                                    <!-- Orders loaded dynamically -->
-                                </div>
+                                <div id="recentOrdersList"></div>
                             </div>
                             <div style="background: #f8fafc; border-radius: 20px; padding: 30px;">
                                 <h3 style="color: var(--dark); margin-bottom: 25px;" data-i18n="dash.topProducts">المنتجات الأكثر مبيعاً</h3>
-                                <div id="topProductsList">
-                                    <!-- Products loaded dynamically -->
-                                </div>
+                                <div id="topProductsList"></div>
                             </div>
                         </div>
                     </div>
@@ -2220,142 +2208,16 @@
         </div>
     </div>
 
-    <!-- Firebase & App Logic -->
+    <!-- Firebase Config & App Logic -->
     <script>
-        // Translations
-        const translations = {
-            ar: {
-                appName: "Global Market Pro",
-                nav: { home: "الرئيسية", products: "المنتجات", suppliers: "الموردين", tracking: "تتبع الشحن" },
-                auth: {
-                    login: "دخول", register: "تسجيل", loginTitle: "تسجيل الدخول",
-                    registerTitle: "إنشاء حساب", email: "البريد الإلكتروني",
-                    password: "كلمة المرور", fullName: "الاسم الكامل",
-                    accountType: "نوع الحساب", selectType: "اختر...",
-                    buyer: "مشتري - أبحث عن منتجات", supplier: "مورد - أبيع منتجات",
-                    createAccount: "إنشاء الحساب", or: "أو",
-                    google: "الدخول بـ Google", googleRegister: "التسجيل بـ Google",
-                    noAccount: "ليس لديك حساب؟", registerNow: "سجل الآن"
-                },
-                hero: {
-                    title: "منصة التجارة العالمية الموثوقة 🌐",
-                    subtitle: "اكتشف ملايين المنتجات من موردين موثوقين حول العالم",
-                    search: "بحث", searchPlaceholder: "ابحث عن منتجات، موردين، أو تصنيفات..."
-                },
-                stats: {
-                    suppliers: "مورد نشط", products: "منتج متنوع",
-                    countries: "دولة مشمولة", volume: "حجم التداول",
-                    revenue: "إجمالي المبيعات", orders: "الطلبات الجديدة",
-                    myProducts: "منتجاتي", customers: "عملاء جدد"
-                },
-                categories: { title: "تصفح حسب التصنيف" },
-                products: { featured: "منتجات مميزة 🔥", all: "جميع المنتجات 📦", viewAll: "عرض الكل" },
-                cart: {
-                    title: "سلة المشتريات", subtotal: "المجموع الفرعي",
-                    shipping: "الشحن", free: "مجاني", tax: "الضريبة",
-                    total: "الإجمالي", checkout: "إتمام الشراء"
-                },
-                checkout: {
-                    title: "إتمام الشراء", card: "بطاقة ائتمان",
-                    paypalDesc: "الدفع الآمن عبر PayPal", cod: "الدفع عند الاستلام",
-                    codDesc: "ادفع نقداً عند استلام طلبك", cardNumber: "رقم البطاقة",
-                    expiry: "تاريخ الانتهاء", cvv: "CVV", total: "المبلغ الإجمالي",
-                    payNow: "ادفع الآن"
-                },
-                tracking: {
-                    title: "تتبع شحنتك 📦", subtitle: "أدخل رقم التتبع لمعرفة حالة شحنتك",
-                    placeholder: "مثال: TRK-123456789", button: "تتبع",
-                    delivered: "تم التوصيل", history: "سجل الشحنات", noHistory: "لا توجد شحنات سابقة"
-                },
-                notifications: { title: "الإشعارات", markAll: "تحديد الكل مقروء" },
-                chat: { support: "الدعم الفني", online: "متصل الآن", placeholder: "اكتب رسالتك..." },
-                support: {
-                    title: "الدعم الفني", available: "نحن هنا لمساعدتك 24/7",
-                    contact: "تواصل معنا عبر:", phone: "رقم الهاتف الموحد",
-                    call: "اتصال", whatsapp: "واتساب", chat: "دردشة"
-                },
-                dash: {
-                    overview: "نظرة عامة", products: "منتجاتي", orders: "الطلبات",
-                    shipments: "الشحنات", messages: "الرسائل", analytics: "الإحصائيات",
-                    logout: "تسجيل الخروج", export: "تصدير التقرير",
-                    overviewTitle: "نظرة عامة 📊", myProductsTitle: "منتجاتي 📦",
-                    addProduct: "إضافة منتج", recentOrders: "آخر الطلبات",
-                    topProducts: "المنتجات الأكثر مبيعاً"
-                },
-                filter: { all: "جميع التصنيفات" },
-                sort: { newest: "الأحدث", priceLow: "السعر: من الأقل", priceHigh: "السعر: من الأعلى", rating: "الأعلى تقييماً" }
-            },
-            en: {
-                appName: "Global Market Pro",
-                nav: { home: "Home", products: "Products", suppliers: "Suppliers", tracking: "Track Order" },
-                auth: {
-                    login: "Login", register: "Register", loginTitle: "Sign In",
-                    registerTitle: "Create Account", email: "Email",
-                    password: "Password", fullName: "Full Name",
-                    accountType: "Account Type", selectType: "Select...",
-                    buyer: "Buyer - I want to buy products", supplier: "Supplier - I want to sell products",
-                    createAccount: "Create Account", or: "Or",
-                    google: "Sign in with Google", googleRegister: "Sign up with Google",
-                    noAccount: "Don't have an account?", registerNow: "Register now"
-                },
-                hero: {
-                    title: "Global Trusted Trading Platform 🌐",
-                    subtitle: "Discover millions of products from verified suppliers worldwide",
-                    search: "Search", searchPlaceholder: "Search products, suppliers, categories..."
-                },
-                stats: {
-                    suppliers: "Active Suppliers", products: "Products",
-                    countries: "Countries", volume: "Trading Volume",
-                    revenue: "Total Revenue", orders: "New Orders",
-                    myProducts: "My Products", customers: "New Customers"
-                },
-                categories: { title: "Browse by Category" },
-                products: { featured: "Featured Products 🔥", all: "All Products 📦", viewAll: "View All" },
-                cart: {
-                    title: "Shopping Cart", subtotal: "Subtotal",
-                    shipping: "Shipping", free: "Free", tax: "Tax",
-                    total: "Total", checkout: "Checkout"
-                },
-                checkout: {
-                    title: "Checkout", card: "Credit Card",
-                    paypalDesc: "Secure payment via PayPal", cod: "Cash on Delivery",
-                    codDesc: "Pay cash when you receive", cardNumber: "Card Number",
-                    expiry: "Expiry Date", cvv: "CVV", total: "Total Amount",
-                    payNow: "Pay Now"
-                },
-                tracking: {
-                    title: "Track Your Shipment 📦", subtitle: "Enter tracking number to check status",
-                    placeholder: "e.g. TRK-123456789", button: "Track",
-                    delivered: "Delivered", history: "Shipment History", noHistory: "No previous shipments"
-                },
-                notifications: { title: "Notifications", markAll: "Mark all as read" },
-                chat: { support: "Customer Support", online: "Online now", placeholder: "Type your message..." },
-                support: {
-                    title: "Customer Support", available: "We're here to help 24/7",
-                    contact: "Contact us via:", phone: "Hotline Number",
-                    call: "Call", whatsapp: "WhatsApp", chat: "Live Chat"
-                },
-                dash: {
-                    overview: "Overview", products: "My Products", orders: "Orders",
-                    shipments: "Shipments", messages: "Messages", analytics: "Analytics",
-                    logout: "Logout", export: "Export Report",
-                    overviewTitle: "Overview 📊", myProductsTitle: "My Products 📦",
-                    addProduct: "Add Product", recentOrders: "Recent Orders",
-                    topProducts: "Top Selling Products"
-                },
-                filter: { all: "All Categories" },
-                sort: { newest: "Newest", priceLow: "Price: Low to High", priceHigh: "Price: High to Low", rating: "Top Rated" }
-            }
-        };
-
-        // Firebase Config - REPLACE WITH YOUR CONFIG
+        // ✅ بيانات Firebase الخاصة بك - جاهزة للعمل
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyB650D7BDg0f4q7cf9kndvKW5Qz8H1nFj0",
+            authDomain: "mymarket-ec08e.firebaseapp.com",
+            projectId: "mymarket-ec08e",
+            storageBucket: "mymarket-ec08e.firebasestorage.app",
+            messagingSenderId: "529357774752",
+            appId: "1:529357774752:web:1dc0b061541702e22f8ec5"
         };
 
         // Initialize Firebase
@@ -2374,29 +2236,66 @@
 
         // Sample Data
         const categories = [
-            { id: 'electronics', name: { ar: 'إلكترونيات', en: 'Electronics' }, icon: '📱' },
-            { id: 'fashion', name: { ar: 'أزياء', en: 'Fashion' }, icon: '👔' },
-            { id: 'home', name: { ar: 'منزل', en: 'Home' }, icon: '🏠' },
-            { id: 'beauty', name: { ar: 'تجميل', en: 'Beauty' }, icon: '💄' },
-            { id: 'sports', name: { ar: 'رياضة', en: 'Sports' }, icon: '⚽' },
-            { id: 'toys', name: { ar: 'ألعاب', en: 'Toys' }, icon: '🎮' }
+            { id: 'electronics', name: { ar: 'إلكترونيات', en: 'Electronics', fr: 'Électronique', es: 'Electrónica', tr: 'Elektronik', zh: '电子产品' }, icon: '📱' },
+            { id: 'fashion', name: { ar: 'أزياء', en: 'Fashion', fr: 'Mode', es: 'Moda', tr: 'Moda', zh: '时尚' }, icon: '👔' },
+            { id: 'home', name: { ar: 'منزل', en: 'Home', fr: 'Maison', es: 'Hogar', tr: 'Ev', zh: '家居' }, icon: '🏠' },
+            { id: 'beauty', name: { ar: 'تجميل', en: 'Beauty', fr: 'Beauté', es: 'Belleza', tr: 'Güzellik', zh: '美容' }, icon: '💄' },
+            { id: 'sports', name: { ar: 'رياضة', en: 'Sports', fr: 'Sports', es: 'Deportes', tr: 'Spor', zh: '运动' }, icon: '⚽' },
+            { id: 'toys', name: { ar: 'ألعاب', en: 'Toys', fr: 'Jouets', es: 'Juguetes', tr: 'Oyuncak', zh: '玩具' }, icon: '🎮' }
         ];
 
         const sampleProducts = [
-            { id: 1, name: { ar: "سماعات بلوتوث لاسلكية", en: "Wireless Bluetooth Headphones" }, category: "electronics", price: 45.99, oldPrice: 89.99, image: "🎧", rating: 4.8, reviews: 234, supplier: "TechHub", minOrder: 50, stock: 1000 },
-            { id: 2, name: { ar: "ساعة ذكية رياضية", en: "Smart Sports Watch" }, category: "electronics", price: 79.99, oldPrice: 129.99, image: "⌚", rating: 4.6, reviews: 189, supplier: "SmartWear", minOrder: 30, stock: 500 },
-            { id: 3, name: { ar: "قميص رجالي كلاسيكي", en: "Men's Classic Shirt" }, category: "fashion", price: 24.99, oldPrice: 49.99, image: "👔", rating: 4.5, reviews: 156, supplier: "Fashion Pro", minOrder: 100, stock: 2000 },
-            { id: 4, name: { ar: "كريم العناية بالبشرة", en: "Skin Care Cream" }, category: "beauty", price: 19.99, oldPrice: 35.00, image: "🧴", rating: 4.9, reviews: 412, supplier: "BeautyLine", minOrder: 200, stock: 1500 },
-            { id: 5, name: { ar: "أداة مطبخ متعددة", en: "Multi-function Kitchen Tool" }, category: "home", price: 34.99, oldPrice: 59.99, image: "🍳", rating: 4.7, reviews: 98, supplier: "HomeMaster", minOrder: 40, stock: 800 },
-            { id: 6, name: { ar: "كرة قدم احترافية", en: "Professional Football" }, category: "sports", price: 29.99, oldPrice: 45.00, image: "⚽", rating: 4.8, reviews: 267, supplier: "SportsPro", minOrder: 60, stock: 1200 }
+            { id: 1, name: { ar: "سماعات بلوتوث لاسلكية", en: "Wireless Bluetooth Headphones", fr: "Casque Bluetooth", es: "Auriculares Bluetooth", tr: "Kablosuz Kulaklık", zh: "无线蓝牙耳机" }, category: "electronics", price: 45.99, oldPrice: 89.99, image: "🎧", rating: 4.8, reviews: 234, supplier: "TechHub", minOrder: 50, stock: 1000 },
+            { id: 2, name: { ar: "ساعة ذكية رياضية", en: "Smart Sports Watch", fr: "Montre Sport Connectée", es: "Reloj Deportivo Inteligente", tr: "Akıllı Spor Saati", zh: "智能运动手表" }, category: "electronics", price: 79.99, oldPrice: 129.99, image: "⌚", rating: 4.6, reviews: 189, supplier: "SmartWear", minOrder: 30, stock: 500 },
+            { id: 3, name: { ar: "قميص رجالي كلاسيكي", en: "Men's Classic Shirt", fr: "Chemise Classique Homme", es: "Camisa Clásica Hombre", tr: "Klasik Gömlek", zh: "男士经典衬衫" }, category: "fashion", price: 24.99, oldPrice: 49.99, image: "👔", rating: 4.5, reviews: 156, supplier: "Fashion Pro", minOrder: 100, stock: 2000 },
+            { id: 4, name: { ar: "كريم العناية بالبشرة", en: "Skin Care Cream", fr: "Crème Soin Visage", es: "Crema Cuidado Facial", tr: "Cilt Bakım Kremi", zh: "护肤霜" }, category: "beauty", price: 19.99, oldPrice: 35.00, image: "🧴", rating: 4.9, reviews: 412, supplier: "BeautyLine", minOrder: 200, stock: 1500 },
+            { id: 5, name: { ar: "أداة مطبخ متعددة", en: "Multi-function Kitchen Tool", fr: "Outil Cuisine Multifonction", es: "Herramienta Cocina", tr: "Mutfak Aleti", zh: "多功能厨房工具" }, category: "home", price: 34.99, oldPrice: 59.99, image: "🍳", rating: 4.7, reviews: 98, supplier: "HomeMaster", minOrder: 40, stock: 800 },
+            { id: 6, name: { ar: "كرة قدم احترافية", en: "Professional Football", fr: "Ballon Football Pro", es: "Balón Fútbol Profesional", tr: "Profesyonel Futbol Topu", zh: "专业足球" }, category: "sports", price: 29.99, oldPrice: 45.00, image: "⚽", rating: 4.8, reviews: 267, supplier: "SportsPro", minOrder: 60, stock: 1200 }
         ];
+
+        // Translations
+        const translations = {
+            ar: {
+                appName: "Global Market Pro",
+                nav: { home: "الرئيسية", products: "المنتجات", suppliers: "الموردين", tracking: "تتبع الشحن" },
+                auth: { login: "دخول", register: "تسجيل", loginTitle: "تسجيل الدخول", registerTitle: "إنشاء حساب", email: "البريد الإلكتروني", password: "كلمة المرور", fullName: "الاسم الكامل", accountType: "نوع الحساب", selectType: "اختر...", buyer: "مشتري - أبحث عن منتجات", supplier: "مورد - أبيع منتجات", createAccount: "إنشاء الحساب", or: "أو", google: "الدخول بـ Google", googleRegister: "التسجيل بـ Google", noAccount: "ليس لديك حساب؟", registerNow: "سجل الآن" },
+                hero: { title: "منصة التجارة العالمية الموثوقة 🌐", subtitle: "اكتشف ملايين المنتجات من موردين موثوقين حول العالم", search: "بحث", searchPlaceholder: "ابحث عن منتجات، موردين، أو تصنيفات..." },
+                stats: { suppliers: "مورد نشط", products: "منتج متنوع", countries: "دولة مشمولة", volume: "حجم التداول", revenue: "إجمالي المبيعات", orders: "الطلبات الجديدة", myProducts: "منتجاتي", customers: "عملاء جدد" },
+                categories: { title: "تصفح حسب التصنيف" },
+                products: { featured: "منتجات مميزة 🔥", all: "جميع المنتجات 📦", viewAll: "عرض الكل" },
+                cart: { title: "سلة المشتريات", subtotal: "المجموع الفرعي", shipping: "الشحن", free: "مجاني", tax: "الضريبة", total: "الإجمالي", checkout: "إتمام الشراء" },
+                checkout: { title: "إتمام الشراء", card: "بطاقة ائتمان", paypalDesc: "الدفع الآمن عبر PayPal", cod: "الدفع عند الاستلام", codDesc: "ادفع نقداً عند استلام طلبك", cardNumber: "رقم البطاقة", expiry: "تاريخ الانتهاء", cvv: "CVV", total: "المبلغ الإجمالي", payNow: "ادفع الآن" },
+                tracking: { title: "تتبع شحنتك 📦", subtitle: "أدخل رقم التتبع لمعرفة حالة شحنتك", placeholder: "مثال: TRK-123456789", button: "تتبع", delivered: "تم التوصيل", history: "سجل الشحنات", noHistory: "لا توجد شحنات سابقة" },
+                notifications: { title: "الإشعارات", markAll: "تحديد الكل مقروء" },
+                chat: { support: "الدعم الفني", online: "متصل الآن", placeholder: "اكتب رسالتك..." },
+                support: { title: "الدعم الفني", available: "نحن هنا لمساعدتك 24/7", contact: "تواصل معنا عبر:", phone: "رقم الهاتف الموحد", call: "اتصال", whatsapp: "واتساب", chat: "دردشة" },
+                dash: { overview: "نظرة عامة", products: "منتجاتي", orders: "الطلبات", shipments: "الشحنات", messages: "الرسائل", analytics: "الإحصائيات", logout: "تسجيل الخروج", export: "تصدير التقرير", overviewTitle: "نظرة عامة 📊", myProductsTitle: "منتجاتي 📦", addProduct: "إضافة منتج", recentOrders: "آخر الطلبات", topProducts: "المنتجات الأكثر مبيعاً" },
+                filter: { all: "جميع التصنيفات" },
+                sort: { newest: "الأحدث", priceLow: "السعر: من الأقل", priceHigh: "السعر: من الأعلى", rating: "الأعلى تقييماً" }
+            },
+            en: {
+                appName: "Global Market Pro",
+                nav: { home: "Home", products: "Products", suppliers: "Suppliers", tracking: "Track Order" },
+                auth: { login: "Login", register: "Register", loginTitle: "Sign In", registerTitle: "Create Account", email: "Email", password: "Password", fullName: "Full Name", accountType: "Account Type", selectType: "Select...", buyer: "Buyer - I want to buy products", supplier: "Supplier - I want to sell products", createAccount: "Create Account", or: "Or", google: "Sign in with Google", googleRegister: "Sign up with Google", noAccount: "Don't have an account?", registerNow: "Register now" },
+                hero: { title: "Global Trusted Trading Platform 🌐", subtitle: "Discover millions of products from verified suppliers worldwide", search: "Search", searchPlaceholder: "Search products, suppliers, categories..." },
+                stats: { suppliers: "Active Suppliers", products: "Products", countries: "Countries", volume: "Trading Volume", revenue: "Total Revenue", orders: "New Orders", myProducts: "My Products", customers: "New Customers" },
+                categories: { title: "Browse by Category" },
+                products: { featured: "Featured Products 🔥", all: "All Products 📦", viewAll: "View All" },
+                cart: { title: "Shopping Cart", subtotal: "Subtotal", shipping: "Shipping", free: "Free", tax: "Tax", total: "Total", checkout: "Checkout" },
+                checkout: { title: "Checkout", card: "Credit Card", paypalDesc: "Secure payment via PayPal", cod: "Cash on Delivery", codDesc: "Pay cash when you receive", cardNumber: "Card Number", expiry: "Expiry Date", cvv: "CVV", total: "Total Amount", payNow: "Pay Now" },
+                tracking: { title: "Track Your Shipment 📦", subtitle: "Enter tracking number to check status", placeholder: "e.g. TRK-123456789", button: "Track", delivered: "Delivered", history: "Shipment History", noHistory: "No previous shipments" },
+                notifications: { title: "Notifications", markAll: "Mark all as read" },
+                chat: { support: "Customer Support", online: "Online now", placeholder: "Type your message..." },
+                support: { title: "Customer Support", available: "We're here to help 24/7", contact: "Contact us via:", phone: "Hotline Number", call: "Call", whatsapp: "WhatsApp", chat: "Live Chat" },
+                dash: { overview: "Overview", products: "My Products", orders: "Orders", shipments: "Shipments", messages: "Messages", analytics: "Analytics", logout: "Logout", export: "Export Report", overviewTitle: "Overview 📊", myProductsTitle: "My Products 📦", addProduct: "Add Product", recentOrders: "Recent Orders", topProducts: "Top Selling Products" },
+                filter: { all: "All Categories" },
+                sort: { newest: "Newest", priceLow: "Price: Low to High", priceHigh: "Price: High to Low", rating: "Top Rated" }
+            }
+        };
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                document.getElementById('appLoader').classList.add('hidden');
-            }, 1500);
-
+            setTimeout(() => document.getElementById('appLoader').classList.add('hidden'), 1500);
             initApp();
             setupNotifications();
         });
@@ -2417,7 +2316,6 @@
             document.documentElement.lang = lang;
             document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             
-            // Update all elements with data-i18n
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const keys = el.getAttribute('data-i18n').split('.');
                 let value = translations[lang];
@@ -2425,14 +2323,12 @@
                 if (value) el.textContent = value;
             });
 
-            // Update placeholders
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
                 const value = translations[lang]?.[key] || translations[lang]?.hero?.[key];
                 if (value) el.placeholder = value;
             });
 
-            // Re-render dynamic content
             renderCategories();
             renderProducts(products, 'featuredProducts');
             renderProducts(products, 'allProducts');
@@ -2448,7 +2344,6 @@
                 </div>
             `).join('');
 
-            // Update filter dropdown
             const filterSelect = document.getElementById('categoryFilter');
             if (filterSelect) {
                 filterSelect.innerHTML = `<option value="all">${translations[currentLang].filter.all}</option>` +
@@ -2498,16 +2393,12 @@
             if (!product) return;
 
             const existing = cart.find(item => item.id === productId);
-            if (existing) {
-                existing.quantity++;
-            } else {
-                cart.push({ ...product, quantity: 1 });
-            }
+            if (existing) existing.quantity++;
+            else cart.push({ ...product, quantity: 1 });
 
             updateCartUI();
             showToast(currentLang === 'ar' ? 'تمت الإضافة للسلة ✅' : 'Added to cart ✅', 'success');
             
-            // Animate cart icon
             const cartIcon = document.querySelector('.fa-shopping-cart');
             cartIcon.style.transform = 'scale(1.3)';
             setTimeout(() => cartIcon.style.transform = 'scale(1)', 300);
@@ -2579,7 +2470,7 @@
                 return;
             }
             document.getElementById('checkoutTotal').textContent = document.getElementById('cartTotal').textContent;
-            closeModal('cart');
+            toggleCart();
             openModal('checkout');
         }
 
@@ -2612,11 +2503,11 @@
             result.classList.add('active');
 
             const steps = [
-                { icon: '📦', label: { ar: 'تم الشحن', en: 'Shipped' } },
-                { icon: '✈️', label: { ar: 'في الطريق', en: 'In Transit' } },
-                { icon: '🏭', label: { ar: 'في المستودع', en: 'At Warehouse' } },
-                { icon: '🚚', label: { ar: 'Out for Delivery', en: 'Out for Delivery' } },
-                { icon: '✅', label: { ar: 'تم التوصيل', en: 'Delivered' } }
+                { icon: '📦', label: { ar: 'تم الشحن', en: 'Shipped', fr: 'Expédié', es: 'Enviado', tr: 'Gönderildi', zh: '已发货' } },
+                { icon: '✈️', label: { ar: 'في الطريق', en: 'In Transit', fr: 'En transit', es: 'En tránsito', tr: 'Transitte', zh: '运输中' } },
+                { icon: '🏭', label: { ar: 'في المستودع', en: 'At Warehouse', fr: 'Entrepôt', es: 'En almacén', tr: 'Depoda', zh: '在仓库' } },
+                { icon: '🚚', label: { ar: 'قيد التوصيل', en: 'Out for Delivery', fr: 'En livraison', es: 'En reparto', tr: 'Dağıtımda', zh: '派送中' } },
+                { icon: '✅', label: { ar: 'تم التوصيل', en: 'Delivered', fr: 'Livré', es: 'Entregado', tr: 'Teslim edildi', zh: '已送达' } }
             ];
 
             document.getElementById('trackingTimeline').innerHTML = steps.map((step, i) => `
@@ -2649,13 +2540,12 @@
             input.value = '';
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-            // Auto reply
             setTimeout(() => {
                 const replies = {
-                    ar: ['شكراً لتواصلك! 💬', 'كيف يمكنني مساعدتك اليوم؟', 'سيتم الرد عليك في أقرب وقت ⏰'],
+                    ar: ['شكراً لتواصلك! 💬', 'كيف يمكنني مساعدتك اليوم؟', 'سيتم الرد عليك قريباً ⏰'],
                     en: ['Thanks for reaching out! 💬', 'How can I help you today?', 'We will reply soon ⏰']
                 };
-                const reply = replies[currentLang][Math.floor(Math.random() * 3)];
+                const reply = replies[currentLang]?.[Math.floor(Math.random() * 3)] || replies.en[0];
                 
                 messagesDiv.innerHTML += `
                     <div class="message received">
@@ -2673,18 +2563,12 @@
 
         // Notifications
         function setupNotifications() {
-            // Request permission
             if ('Notification' in window && Notification.permission === 'default') {
                 Notification.requestPermission();
             }
 
-            // Firebase Cloud Messaging
             try {
-                messaging.requestPermission().then(() => {
-                    return messaging.getToken();
-                }).then(token => {
-                    console.log('FCM Token:', token);
-                }).catch(err => console.log('FCM Error:', err));
+                messaging.requestPermission().then(() => messaging.getToken()).then(token => console.log('FCM Token:', token)).catch(err => console.log('FCM Error:', err));
             } catch(e) { console.log('FCM not available'); }
         }
 
@@ -2743,7 +2627,6 @@
             notifications.unshift(newNotif);
             renderNotifications();
 
-            // Browser notification
             if ('Notification' in window && Notification.permission === 'granted') {
                 new Notification('Global Market Pro', { body: text, icon: '🌐' });
             }
@@ -2764,12 +2647,9 @@
 
         async function handleEmailLogin(e) {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
             try {
                 showLoader();
-                await auth.signInWithEmailAndPassword(email, password);
+                await auth.signInWithEmailAndPassword(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
                 closeModal('login');
                 showToast(currentLang === 'ar' ? 'تم تسجيل الدخول ✅' : 'Login successful ✅', 'success');
             } catch (error) {
@@ -2781,20 +2661,16 @@
 
         async function handleEmailRegister(e) {
             e.preventDefault();
-            const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-            const type = document.getElementById('regType').value;
-
             try {
                 showLoader();
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                await userCredential.user.updateProfile({ displayName: name });
-                
+                const userCredential = await auth.createUserWithEmailAndPassword(document.getElementById('regEmail').value, document.getElementById('regPassword').value);
+                await userCredential.user.updateProfile({ displayName: document.getElementById('regName').value });
                 await db.collection('users').doc(userCredential.user.uid).set({
-                    name, email, type, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    name: document.getElementById('regName').value,
+                    email: document.getElementById('regEmail').value,
+                    type: document.getElementById('regType').value,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
                 closeModal('register');
                 showToast(currentLang === 'ar' ? 'تم إنشاء الحساب ✅' : 'Account created ✅', 'success');
             } catch (error) {
@@ -2807,8 +2683,7 @@
         async function socialLogin(provider) {
             try {
                 showLoader();
-                const authProvider = new firebase.auth.GoogleAuthProvider();
-                await auth.signInWithPopup(authProvider);
+                await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
                 closeModal('login');
                 closeModal('register');
                 showToast(currentLang === 'ar' ? 'تم تسجيل الدخول ✅' : 'Login successful ✅', 'success');
@@ -2850,10 +2725,6 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(page).classList.add('active');
             window.scrollTo(0, 0);
-
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            if (page === 'home') document.querySelectorAll('.nav-link')[0].classList.add('active');
-            if (page === 'products') document.querySelectorAll('.nav-link')[1].classList.add('active');
         }
 
         function showDashSection(section) {
@@ -2879,25 +2750,6 @@
         }
 
         // Utilities
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            
-            const icons = { success: 'check-circle', error: 'exclamation-circle', warning: 'exclamation-triangle', info: 'info-circle' };
-            
-            toast.innerHTML = `
-                <div class="toast-icon"><i class="fas fa-${icons[type]}"></i></div>
-                <div class="toast-content">
-                    <div class="toast-title">${type === 'success' ? 'نجاح' : type === 'error' ? 'خطأ' : 'تنبيه'}</div>
-                    <div class="toast-message">${message}</div>
-                </div>
-            `;
-            
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
-        }
-
         function showLoader() {
             document.getElementById('appLoader').classList.remove('hidden');
         }
@@ -2906,12 +2758,29 @@
             document.getElementById('appLoader').classList.add('hidden');
         }
 
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = { success: 'check-circle', error: 'exclamation-circle', warning: 'exclamation-triangle', info: 'info-circle' };
+            const titles = { ar: { success: 'نجاح', error: 'خطأ', warning: 'تنبيه', info: 'معلومات' }, en: { success: 'Success', error: 'Error', warning: 'Warning', info: 'Info' } };
+            
+            toast.innerHTML = `
+                <div class="toast-icon"><i class="fas fa-${icons[type]}"></i></div>
+                <div class="toast-content">
+                    <div class="toast-title">${titles[currentLang]?.[type] || titles.en[type]}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
         function searchProducts() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = products.filter(p => 
-                p.name[currentLang].toLowerCase().includes(query) ||
-                p.category.toLowerCase().includes(query)
-            );
+            const filtered = products.filter(p => p.name[currentLang].toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
             renderProducts(filtered, 'featuredProducts');
             if (query) showPage('products');
         }
@@ -2937,13 +2806,9 @@
 
         // Close dropdowns on outside click
         window.onclick = function(e) {
-            if (!e.target.closest('.icon-btn')) {
-                document.getElementById('notificationsDropdown').classList.remove('active');
-            }
-            if (e.target.classList.contains('modal')) {
-                e.target.classList.remove('active');
-            }
-        }
+            if (!e.target.closest('.icon-btn')) document.getElementById('notificationsDropdown').classList.remove('active');
+            if (e.target.classList.contains('modal')) e.target.classList.remove('active');
+        };
     </script>
 </body>
 </html>
