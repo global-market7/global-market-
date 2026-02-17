@@ -1,26 +1,9 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, User } from 'firebase/auth';
-import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, Timestamp, onSnapshot, serverTimestamp, increment, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAnalytics } from 'firebase/analytics';
+import { createClient } from '@supabase/supabase-js';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB650D7BDg0f4q7cf9kndvKW5Qz8H1nFj0",
-  authDomain: "mymarket-ec08e.firebaseapp.com",
-  projectId: "mymarket-ec08e",
-  storageBucket: "mymarket-ec08e.firebasestorage.app",
-  messagingSenderId: "529357774752",
-  appId: "1:529357774752:web:1dc0b061541702e22f8ec5",
-  measurementId: "G-E4DY747EB9"
-};
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
-
-export const googleProvider = new GoogleAuthProvider();
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export type Product = {
   id: string;
