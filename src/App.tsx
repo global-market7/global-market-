@@ -152,9 +152,9 @@ function ToastContainer({ items }: { items: ToastItem[] }) {
   const icons = { success: CheckCircle, error: XCircle, warning: AlertTriangle, info: Zap };
   const colors = { success: 'text-emerald-400', error: 'text-red-400', warning: 'text-amber-400', info: 'text-blue-400' };
   return (
-    <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[10000] flex flex-col gap-2">
+    <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[10000] flex flex-col gap-2 pointer-events-none">
       {items.map(t => { const I = icons[t.type]; return (
-        <div key={t.id} className="bg-slate-900 text-white px-5 py-3 rounded-full text-sm font-medium flex items-center gap-3 shadow-2xl" style={{animation:'slideDown .3s ease-out'}}>
+        <div key={t.id} className="bg-slate-900 text-white px-5 py-3 rounded-full text-sm font-medium flex items-center gap-3 shadow-2xl pointer-events-auto" style={{animation:'slideDown .3s ease-out forwards'}}>
           <I size={16} className={colors[t.type]} /> {t.msg}
         </div>
       ); })}
@@ -165,8 +165,8 @@ function ToastContainer({ items }: { items: ToastItem[] }) {
 function Modal({ title, onClose, children, wide }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
   useEffect(() => { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; }, []);
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto" style={{animation:'fadeIn .2s'}} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className={`bg-white rounded-t-3xl sm:rounded-2xl w-full ${wide ? 'max-w-4xl' : 'max-w-lg'} max-h-[95vh] sm:max-h-[90vh] flex flex-col shadow-2xl`} style={{animation:'slideUp .35s ease-out'}}>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto" style={{animation:'fadeIn .2s forwards'}} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className={`bg-white rounded-t-3xl sm:rounded-2xl w-full ${wide ? 'max-w-4xl' : 'max-w-lg'} max-h-[95vh] sm:max-h-[90vh] flex flex-col shadow-2xl`} style={{animation:'slideUp .35s ease-out forwards'}}>
         <div className="bg-gradient-to-l from-blue-600 via-blue-700 to-indigo-700 text-white px-6 py-4 flex justify-between items-center rounded-t-3xl sm:rounded-t-2xl shrink-0 relative overflow-hidden">
           <div className="absolute -top-10 -left-10 w-32 h-32 bg-white/5 rounded-full" />
           <h3 className="font-bold text-lg relative z-10">{title}</h3>
