@@ -1,24 +1,24 @@
 import { Heart } from 'lucide-react';
-import { useAppContext } from '../App';
-import { ProductCard } from '../components/ProductCard';
+import { useStore } from '../context/StoreContext';
+import ProductCard from '../components/ProductCard';
 
-export function FavoritesPage() {
-  const { store, setCurrentPage } = useAppContext();
+export default function FavoritesPage() {
+  const store = useStore();
   const favProducts = store.products.filter(p => store.favorites.includes(p.id));
 
   if (favProducts.length === 0) {
     return (
-      <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-slate-100">
-        <div className="w-24 h-24 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-4">
-          <Heart size={40} className="text-red-300" />
+      <div className="text-center py-16 bg-card rounded-2xl border border-border">
+        <div className="w-16 h-16 bg-destructive/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <Heart size={28} className="text-destructive/40" />
         </div>
-        <h3 className="text-lg font-bold text-slate-800 mb-2">لا توجد مفضلات بعد</h3>
-        <p className="text-sm text-slate-400 mb-6">أضف المنتجات التي تعجبك لتجدها بسهولة لاحقاً</p>
+        <h3 className="text-base font-semibold text-card-foreground mb-2">No favorites yet</h3>
+        <p className="text-sm text-muted-foreground mb-5">Save products you like for easy access later</p>
         <button
-          onClick={() => setCurrentPage('home')}
-          className="bg-gradient-to-l from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:from-blue-700 hover:to-indigo-700 transition-all"
+          onClick={() => store.setPage('home')}
+          className="bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity"
         >
-          تصفح المنتجات ←
+          Browse Products
         </button>
       </div>
     );
@@ -27,18 +27,16 @@ export function FavoritesPage() {
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
-          <Heart size={20} className="text-red-500" />
+        <div className="w-10 h-10 bg-destructive/10 rounded-xl flex items-center justify-center">
+          <Heart size={18} className="text-destructive" />
         </div>
         <div>
-          <h2 className="text-lg font-extrabold text-slate-800">المفضلة</h2>
-          <p className="text-xs text-slate-400">{favProducts.length} منتج محفوظ</p>
+          <h2 className="text-lg font-bold text-foreground">Favorites</h2>
+          <p className="text-xs text-muted-foreground">{favProducts.length} saved products</p>
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-        {favProducts.map((p, i) => (
-          <ProductCard key={p.id} product={p} index={i} />
-        ))}
+        {favProducts.map(p => <ProductCard key={p.id} product={p} />)}
       </div>
     </div>
   );

@@ -1,156 +1,94 @@
-import { Heart, ShoppingCart, Star, StarHalf, BadgeCheck, Truck, Eye } from 'lucide-react';
-import { useAppContext } from '../App';
-import { type Product } from '../store';
+import { Heart, ShoppingCart, Star, Shield } from 'lucide-react';
+import { useStore, type Product } from '../context/StoreContext';
+import { useAuth } from '../context/AuthContext';
 
-export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
-  const { store, showToast, openProductModal, openOrderModal, openAuthModal } = useAppContext();
+export default function ProductCard({ product }: { product: Product }) {
+  const store = useStore();
+  const { user } = useAuth();
   const isFav = store.favorites.includes(product.id);
+  const discount = product.old_price ? Math.round((1 - product.price / product.old_price) * 100) : 0;
 
   const handleFav = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!store.user) { openAuthModal(); return; }
+    if (!user) { store.setShowAuth(true); return; }
     store.toggleFavorite(product.id);
-    showToast(isFav ? 'تمت الإزالة من المفضلة' : 'تمت الإضافة للمفضلة ❤️', isFav ? 'info' : 'success');
   };
 
-  const handleCart = (e: React.MouseEvent) => {
+  const handleAddCart = (e: React.MouseEvent) => {
     e.stopPropagation();
-    openOrderModal(product);
+    if (!user) { store.setShowAuth(true); return; }
+    store.addToCart(product, product.moq);
   };
-
-  const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
 
   return (
-    <div
-      onClick={() => openProductModal(product)}
-      className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-500 cursor-pointer group"
-      style={{ animationDelay: `${index * 80}ms`, animation: 'fadeInUp 0.5s ease-out both' }}
+    <article
+      onClick={() => store.setSelectedProduct(product)}
+      className="bg-card rounded-2xl overflow-hidden border border-border hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
     >
-      {/* Image */}
-      <div className="relative h-52 overflow-hidden bg-slate-100">
+      <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
         <img
           src={product.images[0]}
-          alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          alt={product.name_en}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-        {/* Badges */}
-        <div className="absolute top-3 right-3 flex flex-col gap-1.5">
+        <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5">
           {product.verified && (
-            <span className="bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm">
-              <BadgeCheck size={11} /> موثق
+            <span className="flex items-center gap-1 bg-success text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+              <Shield size={10} /> Verified
             </span>
           )}
           {discount > 0 && (
-            <span className="bg-gradient-to-l from-red-500 to-pink-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-sm">
-              خصم {discount}%
-            </span>
-          )}
-          {product.badge === 'hot' && (
-            <span className="bg-gradient-to-l from-orange-500 to-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-sm">
-              🔥 الأكثر مبيعاً
-            </span>
-          )}
-          {product.badge === 'new' && (
-            <span className="bg-gradient-to-l from-blue-500 to-cyan-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-sm">
-              ✨ جديد
+            <span className="bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-md">
+              {discount}% OFF
             </span>
           )}
         </div>
-
-        {/* Action buttons */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2 opacity-0 -translate-x-3 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
             onClick={handleFav}
-            className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-lg transition-all backdrop-blur-md ${
-              isFav ? 'bg-red-500 text-white' : 'bg-white/90 text-slate-500 hover:bg-red-500 hover:text-white'
+            className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-colors ${
+              isFav ? 'bg-destructive text-destructive-foreground' : 'bg-card/90 text-muted-foreground hover:bg-destructive hover:text-destructive-foreground'
             }`}
+            aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
           >
-            <Heart size={15} fill={isFav ? 'currentColor' : 'none'} />
+            <Heart size={14} fill={isFav ? 'currentColor' : 'none'} />
           </button>
           <button
-            onClick={handleCart}
-            className="w-9 h-9 bg-white/90 backdrop-blur-md rounded-xl flex items-center justify-center shadow-lg text-slate-500 hover:bg-blue-500 hover:text-white transition-all"
+            onClick={handleAddCart}
+            className="w-8 h-8 bg-card/90 rounded-lg flex items-center justify-center shadow-md text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+            aria-label="Add to cart"
           >
-            <ShoppingCart size={15} />
+            <ShoppingCart size={14} />
           </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); openProductModal(product); }}
-            className="w-9 h-9 bg-white/90 backdrop-blur-md rounded-xl flex items-center justify-center shadow-lg text-slate-500 hover:bg-indigo-500 hover:text-white transition-all"
-          >
-            <Eye size={15} />
-          </button>
-        </div>
-
-        {/* Bottom shipping badge */}
-        <div className="absolute bottom-3 right-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-          <span className="bg-white/90 backdrop-blur text-slate-600 text-[10px] font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm">
-            <Truck size={11} />
-            {product.shippingDays} أيام
-          </span>
         </div>
       </div>
 
-      {/* Info */}
-      <div className="p-4">
-        {/* Price */}
-        <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-xl font-extrabold text-blue-600">${product.price}</span>
-          {product.oldPrice && (
-            <span className="text-xs text-slate-400 line-through">${product.oldPrice}</span>
+      <div className="p-3.5">
+        <div className="flex items-baseline gap-2 mb-1.5">
+          <span className="text-lg font-bold text-primary">${product.price.toFixed(2)}</span>
+          {product.old_price && (
+            <span className="text-xs text-muted-foreground line-through">${product.old_price.toFixed(2)}</span>
           )}
-          <span className="text-[10px] text-slate-400 mr-auto">/ {product.moq}+ pcs</span>
+          <span className="text-[10px] text-muted-foreground ml-auto">MOQ: {product.moq}+</span>
         </div>
-
-        {/* Title */}
-        <h3 className="text-sm font-bold text-slate-800 mb-2 line-clamp-2 leading-relaxed group-hover:text-blue-600 transition-colors">
-          {product.name}
+        <h3 className="text-sm font-semibold text-card-foreground mb-2 line-clamp-2 leading-relaxed group-hover:text-primary transition-colors">
+          {product.name_en}
         </h3>
-
-        {/* Rating */}
         <div className="flex items-center gap-1.5 mb-3">
-          <div className="flex text-amber-400 gap-0.5">
-            {renderStars(product.rating)}
+          <div className="flex text-accent gap-0.5">
+            {[1,2,3,4,5].map(i => (
+              <Star key={i} size={11} fill={i <= Math.round(product.rating) ? 'currentColor' : 'none'} />
+            ))}
           </div>
-          <span className="text-[11px] text-slate-400 font-medium">({product.reviewCount})</span>
-          <span className="text-[11px] text-slate-300 mx-1">|</span>
-          <span className="text-[11px] text-emerald-600 font-semibold">{product.sold.toLocaleString()} مبيعة</span>
+          <span className="text-[11px] text-muted-foreground">({product.reviews})</span>
+          <span className="text-[11px] text-success font-medium ml-auto">{product.sold.toLocaleString()} sold</span>
         </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-3 border-t border-slate-50">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-[9px] font-bold">
-              {product.sellerName.charAt(0)}
-            </div>
-            <div>
-              <span className="text-[11px] text-slate-600 font-medium">{product.sellerName}</span>
-              <span className="text-[10px] text-slate-400 mr-1">{product.sellerCountry}</span>
-            </div>
-          </div>
-          <span className="text-[10px] text-slate-400 bg-slate-50 px-2 py-1 rounded-md">
-            📍 {product.origin}
-          </span>
+        <div className="flex items-center justify-between pt-2.5 border-t border-border">
+          <span className="text-xs font-medium text-muted-foreground">{product.seller_name}</span>
+          <span className="text-[10px] text-muted-foreground bg-secondary px-2 py-0.5 rounded-md">{product.origin}</span>
         </div>
       </div>
-    </div>
+    </article>
   );
-}
-
-export function renderStars(rating: number) {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    if (i <= Math.floor(rating)) {
-      stars.push(<Star key={i} size={13} fill="currentColor" />);
-    } else if (i - 0.5 <= rating) {
-      stars.push(<StarHalf key={i} size={13} fill="currentColor" />);
-    } else {
-      stars.push(<Star key={i} size={13} />);
-    }
-  }
-  return stars;
 }

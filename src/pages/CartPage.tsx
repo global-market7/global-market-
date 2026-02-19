@@ -1,135 +1,120 @@
 import { Minus, Plus, Trash2, ShoppingCart, CreditCard, Shield, Truck, RotateCcw, ArrowLeft } from 'lucide-react';
-import { useAppContext } from '../App';
+import { useStore } from '../context/StoreContext';
 
-export function CartPage() {
-  const { store, showToast, setCurrentPage } = useAppContext();
+export default function CartPage() {
+  const store = useStore();
 
   if (store.cart.length === 0) {
     return (
-      <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-slate-100">
-        <div className="w-24 h-24 bg-blue-50 rounded-3xl flex items-center justify-center mx-auto mb-4">
-          <ShoppingCart size={40} className="text-blue-300" />
+      <div className="text-center py-16 bg-card rounded-2xl border border-border">
+        <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <ShoppingCart size={28} className="text-primary/40" />
         </div>
-        <h3 className="text-lg font-bold text-slate-800 mb-2">السلة فارغة</h3>
-        <p className="text-sm text-slate-400 mb-6">أضف منتجات للسلة وابدأ تجربة التسوق</p>
+        <h3 className="text-base font-semibold text-card-foreground mb-2">Your cart is empty</h3>
+        <p className="text-sm text-muted-foreground mb-5">Add products to start shopping</p>
         <button
-          onClick={() => setCurrentPage('home')}
-          className="bg-gradient-to-l from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold text-sm"
+          onClick={() => store.setPage('home')}
+          className="bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity"
         >
-          تصفح المنتجات ←
+          Browse Products
         </button>
       </div>
     );
   }
 
-  const total = store.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const itemCount = store.cart.reduce((sum, item) => sum + item.quantity, 0);
+  const total = store.cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const itemCount = store.cart.reduce((sum, item) => sum + item.qty, 0);
 
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-          <ShoppingCart size={20} className="text-blue-600" />
+        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+          <ShoppingCart size={18} className="text-primary" />
         </div>
         <div>
-          <h2 className="text-lg font-extrabold text-slate-800">سلة التسوق</h2>
-          <p className="text-xs text-slate-400">{store.cart.length} منتج • {itemCount} قطعة</p>
+          <h2 className="text-lg font-bold text-foreground">Shopping Cart</h2>
+          <p className="text-xs text-muted-foreground">{store.cart.length} items, {itemCount} pieces</p>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
         {/* Items */}
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3">
           {store.cart.map(item => (
-            <div key={item.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex gap-4 hover:shadow-md transition-shadow">
-              <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded-xl flex-shrink-0" />
+            <div key={item.id} className="bg-card rounded-xl border border-border p-4 flex gap-4 hover:shadow-sm transition-shadow">
+              <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg shrink-0" />
               <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-slate-800 mb-1 text-sm line-clamp-1">{item.name}</h4>
-                <div className="text-blue-600 font-extrabold text-lg">${item.price}</div>
-                <div className="flex items-center gap-3 mt-3">
-                  <div className="flex items-center gap-1 bg-slate-50 rounded-xl p-1">
+                <h4 className="font-semibold text-card-foreground text-sm line-clamp-1 mb-1">{item.name}</h4>
+                <p className="text-primary font-bold text-lg">${item.price.toFixed(2)}</p>
+                <div className="flex items-center gap-3 mt-2">
+                  <div className="flex items-center gap-1 bg-secondary rounded-lg p-0.5">
                     <button
                       onClick={() => store.updateCartQty(item.id, -1)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white transition-colors text-slate-600"
+                      className="w-7 h-7 rounded-md flex items-center justify-center hover:bg-card transition-colors text-foreground"
                     >
-                      <Minus size={14} />
+                      <Minus size={12} />
                     </button>
-                    <span className="font-bold text-sm w-10 text-center">{item.quantity}</span>
+                    <span className="font-semibold text-sm w-8 text-center text-foreground">{item.qty}</span>
                     <button
                       onClick={() => store.updateCartQty(item.id, 1)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white transition-colors text-slate-600"
+                      className="w-7 h-7 rounded-md flex items-center justify-center hover:bg-card transition-colors text-foreground"
                     >
-                      <Plus size={14} />
+                      <Plus size={12} />
                     </button>
                   </div>
-                  <span className="text-xs text-slate-400">= ${(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="text-xs text-muted-foreground">= ${(item.price * item.qty).toFixed(2)}</span>
                   <button
-                    onClick={() => { store.removeFromCart(item.id); showToast('تمت الإزالة من السلة', 'info'); }}
-                    className="mr-auto bg-red-50 hover:bg-red-100 text-red-500 p-2 rounded-xl transition-colors"
+                    onClick={() => store.removeFromCart(item.id)}
+                    className="ml-auto bg-destructive/10 hover:bg-destructive/20 text-destructive p-2 rounded-lg transition-colors"
+                    aria-label="Remove item"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </button>
                 </div>
               </div>
             </div>
           ))}
-
-          <button onClick={() => setCurrentPage('home')} className="text-blue-600 text-sm font-semibold flex items-center gap-1 mt-2 hover:gap-2 transition-all">
-            <ArrowLeft size={14} className="rotate-180" />
-            متابعة التسوق
+          <button onClick={() => store.setPage('home')} className="text-primary text-sm font-semibold flex items-center gap-1 mt-1 hover:gap-2 transition-all">
+            <ArrowLeft size={14} /> Continue Shopping
           </button>
         </div>
 
         {/* Summary */}
-        <div className="space-y-4">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 sticky top-[140px]">
-            <h3 className="font-bold text-slate-800 mb-4">ملخص الطلب</h3>
-
-            <div className="space-y-3 mb-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">المنتجات ({itemCount})</span>
-                <span className="font-semibold">${total.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">الشحن</span>
-                <span className="text-emerald-600 font-bold">مجاني 🎉</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">الضريبة</span>
-                <span className="text-slate-400">-</span>
-              </div>
+        <div className="bg-card rounded-xl border border-border p-5 h-fit sticky top-[140px]">
+          <h3 className="font-bold text-card-foreground mb-4">Order Summary</h3>
+          <div className="flex flex-col gap-3 mb-4 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Products ({itemCount})</span>
+              <span className="font-medium text-foreground">${total.toFixed(2)}</span>
             </div>
-
-            <div className="border-t-2 border-dashed border-slate-200 pt-4 mb-6">
-              <div className="flex justify-between">
-                <span className="text-lg font-extrabold text-slate-800">الإجمالي</span>
-                <span className="text-2xl font-black text-blue-600">${total.toFixed(2)}</span>
-              </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Shipping</span>
+              <span className="text-success font-semibold">Free</span>
             </div>
-
-            <button
-              onClick={() => showToast('جاري تحويلك لصفحة الدفع...', 'info')}
-              className="w-full bg-gradient-to-l from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20 text-lg"
-            >
-              <CreditCard size={20} />
-              إتمام الشراء
-            </button>
-
-            {/* Trust */}
-            <div className="grid grid-cols-3 gap-2 mt-4">
-              <div className="flex flex-col items-center text-center gap-1 p-2">
-                <Shield size={16} className="text-emerald-500" />
-                <span className="text-[10px] text-slate-400">حماية كاملة</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1 p-2">
-                <Truck size={16} className="text-blue-500" />
-                <span className="text-[10px] text-slate-400">شحن مجاني</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1 p-2">
-                <RotateCcw size={16} className="text-amber-500" />
-                <span className="text-[10px] text-slate-400">إرجاع سهل</span>
-              </div>
+          </div>
+          <div className="border-t border-dashed border-border pt-4 mb-5">
+            <div className="flex justify-between">
+              <span className="text-base font-bold text-foreground">Total</span>
+              <span className="text-xl font-bold text-primary">${total.toFixed(2)}</span>
             </div>
+          </div>
+          <button
+            onClick={() => store.toast('Redirecting to checkout...', 'info')}
+            className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+          >
+            <CreditCard size={18} /> Checkout
+          </button>
+          <div className="grid grid-cols-3 gap-2 mt-4">
+            {[
+              { icon: Shield, label: 'Buyer Protection', color: 'text-success' },
+              { icon: Truck, label: 'Free Shipping', color: 'text-primary' },
+              { icon: RotateCcw, label: 'Easy Returns', color: 'text-accent' },
+            ].map((b, i) => (
+              <div key={i} className="flex flex-col items-center text-center gap-1 p-2">
+                <b.icon size={14} className={b.color} />
+                <span className="text-[10px] text-muted-foreground">{b.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

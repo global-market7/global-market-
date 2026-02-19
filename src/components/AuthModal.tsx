@@ -1,140 +1,144 @@
 import { useState } from 'react';
-import { useAppContext } from '../App';
-import { Modal } from './Modal';
-import { Mail, Lock, User, ArrowLeft } from 'lucide-react';
+import { X, Mail, Lock, User, Loader2, Globe } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useStore } from '../context/StoreContext';
 
-interface Props {
-  onClose: () => void;
-}
-
-export function AuthModal({ onClose }: Props) {
-  const { store, showToast } = useAppContext();
+export default function AuthModal() {
+  const { signIn, signUp } = useAuth();
+  const store = useStore();
+  const [isRegister, setIsRegister] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isRegister, setIsRegister] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) {
-      showToast('أدخل البريد الإلكتروني', 'warning');
-      return;
-    }
-    const displayName = name.trim() || email.split('@')[0];
-    store.login(displayName, email);
-    showToast(`مرحباً ${displayName}! 🎉`, 'success');
-    onClose();
-  };
+    setError('');
+    setLoading(true);
 
-  const handleGoogleLogin = () => {
-    store.login('أحمد المتاجر', 'ahmed@globalmarket.com');
-    showToast('مرحباً أحمد! 🎉', 'success');
-    onClose();
+    try {
+      if (isRegister) {
+        if (!name.trim()) { setError('Please enter your name'); setLoading(false); return; }
+        const { error } = await signUp(email, password, name);
+        if (error) { setError(error.message); setLoading(false); return; }
+        store.toast('Account created! Check your email to verify.', 'success');
+      } else {
+        const { error } = await signIn(email, password);
+        if (error) { setError(error.message); setLoading(false); return; }
+        store.toast('Welcome back!', 'success');
+      }
+      store.setShowAuth(false);
+    } catch {
+      setError('Something went wrong. Please try again.');
+    }
+    setLoading(false);
   };
 
   return (
-    <Modal title={isRegister ? 'إنشاء حساب جديد' : 'تسجيل الدخول'} onClose={onClose} maxWidth="max-w-md">
-      {/* Welcome */}
-      <div className="text-center mb-6">
-        <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
-          <span className="text-4xl">🌐</span>
+    <div
+      className="fixed inset-0 bg-foreground/50 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in"
+      onClick={e => e.target === e.currentTarget && store.setShowAuth(false)}
+    >
+      <div className="bg-card rounded-t-2xl sm:rounded-2xl w-full max-w-md max-h-[95vh] overflow-y-auto shadow-2xl animate-slide-up">
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-border">
+          <h2 className="text-lg font-bold text-card-foreground">
+            {isRegister ? 'Create Account' : 'Sign In'}
+          </h2>
+          <button
+            onClick={() => store.setShowAuth(false)}
+            className="p-2 hover:bg-secondary rounded-xl text-muted-foreground transition-colors"
+            aria-label="Close"
+          >
+            <X size={18} />
+          </button>
         </div>
-        <h3 className="text-lg font-extrabold text-slate-800">
-          {isRegister ? 'انضم إلى Global Market' : 'مرحباً بك مرة أخرى!'}
-        </h3>
-        <p className="text-sm text-slate-400 mt-1">
-          {isRegister ? 'اشترك الآن وابدأ التجارة العالمية' : 'سجل الدخول للمتابعة'}
-        </p>
-      </div>
 
-      {/* Social Login */}
-      <div className="space-y-2.5 mb-6">
-        <button
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 bg-white border-2 border-slate-200 hover:border-slate-300 hover:shadow-sm py-3.5 rounded-xl font-semibold transition-all text-sm"
-        >
-          <img src="https://www.google.com/favicon.ico" width="18" alt="Google" />
-          <span>المتابعة بحساب Google</span>
-        </button>
-        <button
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 bg-slate-900 hover:bg-slate-800 text-white py-3.5 rounded-xl font-semibold transition-all text-sm"
-        >
-          <span className="text-lg">🍎</span>
-          <span>المتابعة مع Apple</span>
-        </button>
-      </div>
-
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex-1 h-px bg-slate-200" />
-        <span className="text-xs text-slate-400 font-medium">أو بالبريد الإلكتروني</span>
-        <div className="flex-1 h-px bg-slate-200" />
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {isRegister && (
-          <div className="relative">
-            <User size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full pr-11 pl-4 py-3.5 border-2 border-slate-200 rounded-xl outline-none focus:border-blue-500 text-sm transition-colors"
-              placeholder="الاسم الكامل"
-              style={{ fontFamily: "'Tajawal', sans-serif" }}
-            />
+        <div className="p-5">
+          {/* Logo */}
+          <div className="text-center mb-6">
+            <div className="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <Globe size={24} className="text-primary-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {isRegister ? 'Join the global marketplace' : 'Welcome back to Global Market'}
+            </p>
           </div>
-        )}
-        <div className="relative">
-          <Mail size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full pr-11 pl-4 py-3.5 border-2 border-slate-200 rounded-xl outline-none focus:border-blue-500 text-sm transition-colors"
-            placeholder="البريد الإلكتروني"
-            style={{ fontFamily: "'Tajawal', sans-serif" }}
-            required
-          />
-        </div>
-        <div className="relative">
-          <Lock size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full pr-11 pl-4 py-3.5 border-2 border-slate-200 rounded-xl outline-none focus:border-blue-500 text-sm transition-colors"
-            placeholder="كلمة المرور"
-            style={{ fontFamily: "'Tajawal', sans-serif" }}
-          />
-        </div>
 
-        {!isRegister && (
-          <div className="text-left">
-            <button type="button" className="text-xs text-blue-600 hover:underline font-medium">
-              نسيت كلمة المرور؟
+          {/* Error */}
+          {error && (
+            <div className="bg-destructive/10 text-destructive text-sm px-4 py-3 rounded-xl mb-4">
+              {error}
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+            {isRegister && (
+              <div className="relative">
+                <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="Full Name"
+                  className="w-full pl-10 pr-4 py-3 bg-secondary border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+                />
+              </div>
+            )}
+
+            <div className="relative">
+              <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="Email address"
+                className="w-full pl-10 pr-4 py-3 bg-secondary border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+                required
+              />
+            </div>
+
+            <div className="relative">
+              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full pl-10 pr-4 py-3 bg-secondary border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+                required
+                minLength={6}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2 mt-1"
+            >
+              {loading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                isRegister ? 'Create Account' : 'Sign In'
+              )}
             </button>
-          </div>
-        )}
+          </form>
 
-        <button
-          type="submit"
-          className="w-full bg-gradient-to-l from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"
-        >
-          {isRegister ? 'إنشاء الحساب' : 'تسجيل الدخول'}
-          <ArrowLeft size={16} />
-        </button>
-      </form>
-
-      <p className="text-center text-sm text-slate-500 mt-6">
-        {isRegister ? 'لديك حساب بالفعل؟' : 'ليس لديك حساب؟'}
-        <button
-          onClick={() => setIsRegister(!isRegister)}
-          className="text-blue-600 font-bold mr-1.5 hover:underline"
-        >
-          {isRegister ? 'تسجيل الدخول' : 'أنشئ حساب مجاناً'}
-        </button>
-      </p>
-    </Modal>
+          {/* Toggle */}
+          <p className="text-center text-sm text-muted-foreground mt-5">
+            {isRegister ? 'Already have an account?' : "Don't have an account?"}
+            <button
+              onClick={() => { setIsRegister(!isRegister); setError(''); }}
+              className="text-primary font-semibold ml-1.5 hover:underline"
+            >
+              {isRegister ? 'Sign In' : 'Create Account'}
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
